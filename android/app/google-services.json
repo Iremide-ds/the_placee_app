@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "939899360394",
+    "project_id": "the-placee",
+    "storage_bucket": "the-placee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:939899360394:android:4392b72108ffb18c8d8973",
+        "android_client_info": {
+          "package_name": "dev.iremide.the_placee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "939899360394-1fg3p4q09g8s26goo45irm8sm9r1auhv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.iremide.the_placee",
+            "certificate_hash": "d2c908c143e9687f3a53deea1a52fb36099bdcfa"
+          }
+        },
+        {
+          "client_id": "939899360394-mqsn182knj9hev5pigjn9894luq9nmk4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQJoyGbJ3U2s0QnbHmDw_IrEmDr9YDV5M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "939899360394-mqsn182knj9hev5pigjn9894luq9nmk4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
