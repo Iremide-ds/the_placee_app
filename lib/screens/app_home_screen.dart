@@ -5,13 +5,11 @@ import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/auth_gate_widget.dart';
 import '../widgets/news_feed_page.dart';
-import '../screens/sign_up_form_screen.dart';
-
-//google sign in object
-final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+import '../util/providers/auth_provider.dart';
 
 //landing page / root
 class AppLandingPage extends StatefulWidget {
@@ -24,69 +22,37 @@ class AppLandingPage extends StatefulWidget {
 class _AppLandingPageState extends State<AppLandingPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GoogleSignInAccount? _currentUser;
-  OAuthCredential? _credential;
-
-  Future<void> _continueWithGoogle() async {
-    try {
-      await _googleSignIn.signIn().then((account) async {
-        if (_currentUser != null) {
-          final GoogleSignInAuthentication googleAuth =
-              await _currentUser!.authentication;
-          _setCurrentUser(account);
-          setState(() {
-            _credential = GoogleAuthProvider.credential(
-              accessToken: googleAuth.accessToken,
-              idToken: googleAuth.idToken,
-            );
-          });
-        }
-      });
-      if (_credential != null) {
-        FirebaseAuth.instance.signInWithCredential(_credential!);
-      } else {
-        log(
-          'No credentials',
-          name: 'AppLandingPage()._continueWithGoogle() attempt firebase login',
-        );
-      }
-    } catch (error) {
-      log(
-        error.toString(),
-        name: 'AppLandingPage()._continueWithGoogle()',
-        time: DateTime.now(),
-      );
-    }
-  }
-
-  void _continueWithEmail() {
-    Navigator.of(context).pushNamed(SignUpForm.routeName);
-  }
-
-  void _setCurrentUser(GoogleSignInAccount? account) {
-    setState(() {
-      _currentUser = account;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     //listener for when user switch account
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      _setCurrentUser(account);
-      if (_currentUser != null) {
-        log(_currentUser!.email,
-            name: '_googleSignIn.onCurrentUserChanged.listen()');
+    Provider.of<AuthProvider>(context, listen: false)
+        .googleSignIn
+        .onCurrentUserChanged
+        .listen((GoogleSignInAccount? account) {
+      Provider.of<AuthProvider>(context, listen: false).setCurrentUser(account);
+      if (Provider.of<AuthProvider>(context, listen: false).getCurrentUser !=
+          null) {
+        log(
+            Provider.of<AuthProvider>(context, listen: false)
+                .getCurrentUser!
+                .email,
+            name: 'googleSignIn.onCurrentUserChanged.listen()');
       }
     });
 
     //automatic google sign in
-    _googleSignIn.signIn().then((user) {
-      _setCurrentUser(user);
-      if (_currentUser != null) {
-        log('_continueWithGoogle() called',
-            name: 'initState()._googleSignIn.signInSilently()');
-        _continueWithGoogle();
+    Provider.of<AuthProvider>(context, listen: false)
+        .googleSignIn
+        .signIn()
+        .then((user) {
+      Provider.of<AuthProvider>(context, listen: false).setCurrentUser(user);
+      if (Provider.of<AuthProvider>(context, listen: false)
+          .getCurrentUser != null) {
+        log('continueWithGoogle() called',
+            name: 'initState().googleSignIn.signInSilently()');
+        Provider.of<AuthProvider>(context, listen: false).continueWithGoogle();
       }
     });
   }
@@ -100,16 +66,10 @@ class _AppLandingPageState extends State<AppLandingPage> {
             log(snapshot.data!.email!, name: 'FirebaseAuth.snapshot');
           }
 
-          return snapshot.hasData
-              ? NewsFeedWidget(
-                  currentUser: _currentUser!,
-                  scaffoldKey: _scaffoldKey,
-                )
-              : Scaffold(
-                  body: AuthGate(
-                    continueWithGoogle: _continueWithGoogle,
-                    continueWithEmail: _continueWithEmail,
-                  ),
+          return Provider.of<AuthProvider>(context).isUserSignedIn
+              ? NewsFeedWidget(scaffoldKey: _scaffoldKey)
+              : const Scaffold(
+                  body: AuthGate(),
                 );
         });
   }

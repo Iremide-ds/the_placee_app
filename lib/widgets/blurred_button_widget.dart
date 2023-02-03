@@ -8,7 +8,7 @@ class BlurredBgButton extends StatelessWidget {
     required this.height,
     required this.width,
     required this.iconWidget,
-    required this.text, required this.onTap,
+    required this.text, required this.onTap, required this.hasArgs, this.onTapArgs,
   }) : super(key: key);
 
   final double height;
@@ -16,6 +16,8 @@ class BlurredBgButton extends StatelessWidget {
   final Widget iconWidget;
   final String text;
   final Function onTap;
+  final bool hasArgs;
+  final Map<String, dynamic>? onTapArgs;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,13 @@ class BlurredBgButton extends StatelessWidget {
           height: height,
           width: width,
           child: TextButton(
-            onPressed: () => onTap(),
+            onPressed: () {
+              if (hasArgs) {
+                onTap(onTapArgs);
+              }else {
+                onTap();
+              }
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
               child: Row(

@@ -2,21 +2,33 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../constants/my_constants.dart';
+// import '../constants/my_constants.dart';
 
 class AvatarForm extends StatefulWidget {
-  const AvatarForm({Key? key}) : super(key: key);
+  final List avatarURIs;
+  final Function setAvatar;
+
+  const AvatarForm({Key? key, required this.avatarURIs, required this.setAvatar}) : super(key: key);
 
   @override
   State<AvatarForm> createState() => _AvatarFormState();
 }
 
 class _AvatarFormState extends State<AvatarForm> {
-  String _chosenAvatar = 'assets/avatars/avatar_1.svg';
+  String _chosenAvatar = '';
 
   void _selectAvatar(String avatar) {
     setState(() {
       _chosenAvatar = avatar;
+    });
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      _chosenAvatar = widget.avatarURIs[0]['uri'];
     });
   }
 
@@ -30,7 +42,7 @@ class _AvatarFormState extends State<AvatarForm> {
         CircleAvatar(
           radius: size.height * 0.15,
           backgroundColor: Colors.transparent,
-          child: SvgPicture.asset(
+          child: SvgPicture.network(
             _chosenAvatar,
             height: size.height * 0.15,
             width: size.width * 0.15,
@@ -65,18 +77,23 @@ class _AvatarFormState extends State<AvatarForm> {
             crossAxisAlignment: WrapCrossAlignment.center,
             alignment: WrapAlignment.center,
             runAlignment: WrapAlignment.center,
-            children: AvatarImages.allAvatars.map((avatar) {
+            children: widget.avatarURIs.map((avatar) {
               return ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          (avatar.toLowerCase() == _chosenAvatar.toLowerCase())
+                          (avatar['uri'].toLowerCase() == _chosenAvatar.toLowerCase())
                               ? const Color(0xffEBEBEB)
                               : Colors.transparent,
                       elevation: 0.0,
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(8.0)),
-                  onPressed: () => _selectAvatar(avatar),
-                  child: SvgPicture.asset(avatar));
+                  onPressed: () {
+                    _selectAvatar(avatar['uri']);
+                    widget.setAvatar(avatar['id'].toString());
+                  },
+                  child: SvgPicture.network(avatar['uri'], placeholderBuilder: (ctx) {
+                    return const CircularProgressIndicator();
+                  },));
             }).toList(),
           ),
         ),

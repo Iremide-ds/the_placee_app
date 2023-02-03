@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
+import '../screens/sign_up_form_screen.dart';
+import '../util/providers/auth_provider.dart';
 import '../widgets/logo_icon_widget.dart';
 import '../widgets/blurred_button_widget.dart';
 import '../screens/sign_in_form_screen.dart';
 
 class AuthGate extends StatelessWidget {
-  final Function continueWithGoogle;
-  final Function continueWithEmail;
-
   const AuthGate({
-    Key? key,
-    required this.continueWithGoogle,
-    required this.continueWithEmail,
+    Key? key
   }) : super(key: key);
 
   @override
@@ -68,7 +66,8 @@ class AuthGate extends StatelessWidget {
           ),
           Center(
             child: BlurredBgButton(
-              onTap: continueWithGoogle,
+              hasArgs: false,
+              onTap: Provider.of<AuthProvider>(context, listen: false).continueWithGoogle,
               height: size.height * 0.06,
               width: size.width * 0.7,
               iconWidget: SvgPicture.asset(
@@ -81,7 +80,9 @@ class AuthGate extends StatelessWidget {
           SizedBox(height: size.height * 0.02),
           Center(
             child: BlurredBgButton(
-              onTap: continueWithEmail,
+              hasArgs: true,
+              onTap: Provider.of<AuthProvider>(context, listen: false).continueWithEmail,
+              onTapArgs: {'context': context, 'route': SignUpForm.routeName},
               height: size.height * 0.06,
               width: size.width * 0.7,
               iconWidget: const Icon(

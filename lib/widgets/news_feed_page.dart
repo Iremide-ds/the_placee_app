@@ -1,20 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
+import '../util/providers/auth_provider.dart';
 import '../widgets/user_home_page.dart';
 import '../widgets/user_explore_page.dart';
 import '../widgets/my_search_bar.dart';
 
 class NewsFeedWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
-  final GoogleSignInAccount? currentUser;
 
-  const NewsFeedWidget(
-      {required this.scaffoldKey, Key? key, required this.currentUser})
-      : super(key: key);
+  const NewsFeedWidget({required this.scaffoldKey, Key? key}) : super(key: key);
 
   @override
   State<NewsFeedWidget> createState() => _NewsFeedWidgetState();
@@ -32,10 +31,6 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         _index = index;
       });
     }
-  }
-
-  void _signOut() {
-    FirebaseAuth.instance.signOut();
   }
 
   PreferredSizeWidget _buildAppBar(
@@ -79,27 +74,60 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
   }
 
   Widget _buildDrawer() {
-    if (widget.currentUser == null) return const Drawer();
+    GoogleSignInAccount? currentUser =
+        Provider.of<AuthProvider>(context, listen: true).getCurrentUser;
+    User? currentUserWithEmailLogin =
+        Provider.of<AuthProvider>(context, listen: true)
+            .getCurrentUserLoggedInWithEmail;
 
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-            child: Column(
-              children: [
-                Text(
-                  widget.currentUser?.displayName ?? widget.currentUser?.email as String,
-                ),
-                TextButton(
-                  onPressed: () => _signOut(),
-                  child: const Text('Sign out'),
-                ),
-              ],
+    if (currentUser != null) {
+      return Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Column(
+                children: [
+                  Text(
+                    currentUser.displayName ?? currentUser.email,
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .signOut(),
+                    child: const Text('Sign out'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    } else if (currentUserWithEmailLogin != null) {
+      return Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Column(
+                children: [
+                  Text(
+                    currentUserWithEmailLogin.displayName ??
+                        currentUserWithEmailLogin.email as String,
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .signOut(),
+                    child: const Text('Sign out'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return const Drawer();
+    }
   }
 
   @override
