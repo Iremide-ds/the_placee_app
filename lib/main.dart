@@ -9,6 +9,7 @@ import './themes/light_theme.dart';
 import './screens/app_home_screen.dart';
 import './screens/sign_up_form_screen.dart';
 import './screens/sign_in_form_screen.dart';
+import './screens/spalsh_screen.dart';
 import './util/providers/auth_provider.dart';
 
 PendingDynamicLinkData? initialLink;
@@ -42,10 +43,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'The Placee',
         theme: AppLightTheme().themeData,
+        initialRoute: MySplashScreen.routeName,
         routes: {
           '/': (_) => const AppLandingPage(),
           SignUpForm.routeName: (_) => const SignUpForm(),
           SignInForm.routeName: (_) => const SignInForm(),
+          MySplashScreen.routeName: (_) => const MySplashScreen(),
         },
         themeAnimationCurve: Curves.easeIn,
       ),

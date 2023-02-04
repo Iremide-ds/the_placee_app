@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../util/providers/auth_provider.dart';
 import '../widgets/user_home_page.dart';
@@ -35,7 +36,13 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
 
   PreferredSizeWidget _buildAppBar(
       double avatarHeight, double searchBarHeight, double searchBarWidth) {
+    GoogleSignInAccount? currentUser =
+        Provider.of<AuthProvider>(context, listen: true).getCurrentUser;
+    User? currentUserWithEmailLogin =
+        Provider.of<AuthProvider>(context, listen: true)
+            .getCurrentUserLoggedInWithEmail;
     return AppBar(
+      scrolledUnderElevation: 0.0,
       elevation: 0.0,
       backgroundColor: Colors.white,
       title: Center(
@@ -61,8 +68,12 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
             backgroundColor: const Color(0xffEBEBEB),
             child: SizedBox(
               height: avatarHeight,
-              child: SvgPicture.asset(
-                'assets/icons/brown_avatar.svg',
+              child: SvgPicture.network(
+                placeholderBuilder: (ctx) {
+                  return const CircularProgressIndicator();
+                },
+                currentUserWithEmailLogin?.photoURL ??
+                    'https://firebasestorage.googleapis.com/v0/b/the-placee.appspot.com/o/avatars%2Favatar_5.svg?alt=media&token=f56ecf65-3504-4530-864a-db1b2f9353b9',
                 fit: BoxFit.contain,
                 semanticsLabel: 'your profile',
               ),

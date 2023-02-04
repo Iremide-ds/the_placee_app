@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,7 +38,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
   int _formIndex = 0;
   bool _isLoading = true;
-  String _chosenAvatarId = '';
+  String _chosenAvatarId = '0';
   bool _registering = false;
   bool _registered = false;
 
@@ -66,10 +67,13 @@ class _SignUpFormState extends State<SignUpForm> {
         await userInstance?.updateDisplayName(_nickNameController.text);
         await FirebaseFirestore.instance
             .collection('avatars')
-            .where('id', isEqualTo: _chosenAvatarId)
+            .where('id', isEqualTo: int.parse(_chosenAvatarId))
             .limit(1)
             .get()
             .then((result) async {
+              if (kDebugMode) {
+                print('logggg - ${result.docs}');
+              }
           await userInstance?.updatePhotoURL(result.docs.first.data()['uri']);
         });
 

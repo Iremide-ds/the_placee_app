@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import './post_card_widget.dart';
 import '../util/providers/auth_provider.dart';
+import '../constants/my_constants.dart';
 
 //news feed
 class UserHomePage extends StatefulWidget {
@@ -16,176 +18,215 @@ class UserHomePage extends StatefulWidget {
 }
 
 class _UserHomePageState extends State<UserHomePage> {
-  void _getCurrentUser(currentUser) async {}
+  final Map _userInterests = {};
+  final List<Widget> hotTopics = [];
+  final List<Widget> latestPosts = [];
+  final Map<String, List> interestAndPosts = {};
+  final List<Widget> interestFeed = [];
+  Map? _userDetails;
+  bool _isLoading = true;
 
-  Widget _buildTopStories() {
-    return const CircularProgressIndicator();
+  Future<void> _getCurrentUserDetails() async {
+    var currentUserGoogle =
+        Provider.of<AuthProvider>(context, listen: false).getCurrentUser;
+    var currentUserEmail = Provider.of<AuthProvider>(context, listen: false)
+        .getCurrentUserLoggedInWithEmail;
+
+    await FirebaseFirestore.instance
+        .collection('user_details')
+        .where('email',
+            isEqualTo: currentUserGoogle?.email ?? currentUserEmail?.email)
+        .limit(1)
+        .get()
+        .then((result) {
+      setState(() {
+        _userDetails = result.docs.first.data();
+      });
+    });
   }
 
-  Widget _buildLatestStory() {
-    return const CircularProgressIndicator();
+  Future<void> _fetchInterest() async {
+    if (_userDetails == null) {
+      if (kDebugMode) {
+        print('no user details');
+      }
+      return;
+    }
+    for (String id in _userDetails!['interests']) {
+      await FirebaseFirestore.instance
+          .collection('topics')
+          .where(
+            'id',
+            isEqualTo: int.parse(id),
+          )
+          .limit(1)
+          .get()
+          .then((result) {
+        if (kDebugMode) {
+          print('interest - ${result.docs.first.data()['name']}');
+        }
+        setState(() {
+          _userInterests[id.toString()] = result.docs.first.data()['name'];
+        });
+      });
+    }
   }
 
-  List<Widget> _buildUserInterests() {
-    //build user's top 5 interests
-    return [
-      const CircularProgressIndicator(),
-      const CircularProgressIndicator()
-    ];
+  void _buildHotTopics(List totalPosts) {
+    hotTopics.addAll(totalPosts.map((doc) {
+      return PostCard(
+          width: MediaQuery.of(context).size.width * 0.32,
+          title: doc['title'],
+          borderRadius: MyBorderRadius.borderRadius,
+          imageUrl: doc['image_url']);
+    }).toList());
+  }
+
+  void _buildLatestStory(List totalPosts) {
+    int totalPostsCount = totalPosts.length;
+
+    latestPosts.addAll(totalPosts
+        .getRange(0, (totalPostsCount >= 5) ? 4 : totalPostsCount - 1)
+        .map((doc) {
+      return PostCard(
+        width: MediaQuery.of(context).size.width * 0.4,
+        title: doc['title'],
+        borderRadius: MyBorderRadius.borderRadius,
+        imageUrl: doc['image_url'],
+      );
+    }).toList());
+  }
+
+  void _buildUserInterests(List totalPosts) {
+    Size size = MediaQuery.of(context).size;
+
+    for (var i in _userDetails!['interests']) {
+      List tempCon = totalPosts.where((element) {
+        Map? temp = element.data() as Map?;
+        return temp?['topic'].toString() == i.toString();
+      }).toList();
+      if (tempCon.isNotEmpty) {
+        interestAndPosts[_userInterests[i.toString()]] = tempCon;
+      }
+      if (interestAndPosts.length == 5) {
+        break;
+      }
+    }
+
+    for (MapEntry<String, List> i in interestAndPosts.entries) {
+      Widget feed = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(i.key),
+          Row(
+            children: [
+              SizedBox(
+                width: size.width,
+                height: size.height * 0.2,
+                child: FeedListView(
+                    height: size.height * 0.14,
+                    width: size.width,
+                    children: i.value
+                        .map((doc) => PostCard(
+                            width: size.width * 0.4,
+                            title: doc['title'],
+                            borderRadius: MyBorderRadius.borderRadius,
+                            imageUrl: doc['image_url']))
+                        .toList()),
+              ),
+            ],
+          ),
+        ],
+      );
+      interestFeed.add(feed);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUserDetails().then((result) {
+      return _fetchInterest();
+    }).then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+    }).catchError((_, err) {
+      if (kDebugMode) {
+        print(err);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    // ThemeData theme = Theme.of(context);
     Size size = MediaQuery.of(context).size;
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('posts')
-          .orderBy("date", descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const CircularProgressIndicator();
-        if (snapshot.data == null) return const CircularProgressIndicator();
-        if (snapshot.data?.docs == null) {
-          return const CircularProgressIndicator();
-        }
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+            .animate()
+            .fadeIn(curve: MyAnimationAttributes.curve)
+        : StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('posts')
+                .orderBy("date", descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.data == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.data?.docs == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-        var currentUserGoogle =
-            Provider.of<AuthProvider>(context).getCurrentUser;
+              final List<QueryDocumentSnapshot<Object?>> totalPosts =
+                  snapshot.data!.docs;
 
-        var currentUserEmail =
-            Provider.of<AuthProvider>(context).getCurrentUserLoggedInWithEmail;
+              _buildHotTopics(totalPosts);
+              _buildLatestStory(totalPosts);
+              _buildUserInterests(totalPosts);
 
-        const double radius = 20.0;
-        const borderRadius = BorderRadius.only(
-          bottomLeft: Radius.circular(radius),
-          topLeft: Radius.circular(radius),
-          topRight: Radius.circular(radius),
-        );
+              if (kDebugMode) {
+                print('debugging - ${interestAndPosts.length}');
+                print('debugging1 - ${_userInterests.length}');
+              }
 
-        final List<QueryDocumentSnapshot<Object?>> totalPosts =
-            snapshot.data!.docs;
+              if (hotTopics.isEmpty ||
+                  latestPosts.isEmpty ||
+                  interestAndPosts.isEmpty) {
+                if (kDebugMode) {
+                  print('no data!!!!');
+                }
+                return const Center(child: CircularProgressIndicator());
+              }
 
-        List<Widget> hotTopics = totalPosts.map((doc) {
-          return PostCard(
-              width: size.width * 0.32,
-              title: doc['title'],
-              borderRadius: borderRadius,
-              imageUrl: doc['image_url']);
-        }).toList();
-
-        final int totalPostsCount = totalPosts.length;
-
-        List<Widget> latestPosts = totalPosts
-            .getRange(0, (totalPostsCount >= 5) ? 4 : totalPostsCount - 1)
-            .map((doc) {
-          return PostCard(
-            width: size.width * 0.4,
-            title: doc['title'],
-            borderRadius: borderRadius,
-            imageUrl: doc['image_url'],
-          );
-        }).toList();
-
-        final List userInterests = [];
-        Map<String, List> interestAndPosts = {};
-        final List<Widget> interestFeed = [];
-        List temp = [];
-        FirebaseFirestore.instance
-            .collection('user_details')
-            .where('email',
-                isEqualTo: currentUserGoogle?.email ?? currentUserEmail?.email)
-            .limit(1)
-            .get()
-            .then((result) {
-          if (kDebugMode) {
-            print(result.docs.first.data()['interests'].runtimeType);
-          }
-          result.docs.first.data()['interests'].forEach((e) {
-            userInterests.add(e);
-          });
-
-          for (var i in userInterests) {
-            List tempCon = totalPosts.where((element) {
-              Map? temp = element.data() as Map?;
-              return temp?['topic'].toString() == i.toString();
-            }).toList();
-
-            interestAndPosts[i] = tempCon;
-          }
-          if (kDebugMode) {
-            print('debugging - ${interestAndPosts.length}');
-            print('debugging1 - ${userInterests.length}');
-          }
-
-          for (MapEntry<String, List> i in interestAndPosts.entries) {
-            Widget feed = Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(i.key),
-                Row(
+              return SizedBox(
+                height: size.height,
+                width: size.width,
+                child: ListView(
+                  shrinkWrap: true,
                   children: [
-                    SizedBox(
-                      width: size.width,
-                      height: size.height * 0.2,
-                      child: FeedListView(
-                          height: size.height * 0.14,
-                          width: size.width,
-                          children: i.value
-                              .map((doc) => PostCard(
-                              width: size.width * 0.4,
-                              title: 'testing',
-                              borderRadius: borderRadius,
-                              imageUrl: doc['image_url']))
-                              .toList()),
+                    FeedListView(
+                        height: size.height * 0.14,
+                        width: size.width,
+                        children: hotTopics),
+                    FeedListView(
+                        height: size.height * 0.19,
+                        width: size.width,
+                        children: latestPosts),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: interestFeed,
                     ),
                   ],
                 ),
-              ],
-            );
-            interestFeed.add(feed);
-          }
-          // userInterests.addAll(result.docs.first.data()['interests']);
-        });
-        //todo: loop the async gaps so that by the time the widgets are rendered the data would have arrived
-
-        if (hotTopics.isEmpty ||
-            latestPosts.isEmpty ||
-            interestAndPosts.isEmpty) {
-          if (kDebugMode) {
-            print('no data!!!!');
-          }
-          return const CircularProgressIndicator();
-        }
-
-        return SingleChildScrollView(
-          child: SizedBox(
-            height: size.height,
-            width: size.width,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FeedListView(
-                    height: size.height * 0.14,
-                    width: size.width,
-                    children: hotTopics),
-                FeedListView(
-                    height: size.height * 0.19,
-                    width: size.width,
-                    children: latestPosts),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: interestFeed,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
   }
 }
 

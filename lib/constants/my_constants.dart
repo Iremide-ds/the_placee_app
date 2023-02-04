@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum Genders { Male, Female, Transgender, Binary, Human }
 
 enum Interests {
@@ -39,4 +41,18 @@ class AvatarImages {
     avatar_9,
     avatar_10,
   ];
+}
+
+
+class MyBorderRadius {
+  static const double radius = 20.0;
+  static const borderRadius = BorderRadius.only(
+    bottomLeft: Radius.circular(radius),
+    topLeft: Radius.circular(radius),
+    topRight: Radius.circular(radius),
+  );
+}
+
+class MyAnimationAttributes {
+  static const curve = Curves.easeIn;
 }
