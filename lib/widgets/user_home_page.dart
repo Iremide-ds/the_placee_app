@@ -73,9 +73,11 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   void _buildHotTopics(List totalPosts) {
+    hotTopics.clear();
     hotTopics.addAll(totalPosts.map((doc) {
       return PostCard(
-          width: MediaQuery.of(context).size.width * 0.32,
+          width: MediaQuery.of(context).size.width * 0.4,
+          // height: MediaQuery.of(context).size.height * 0.2,
           title: doc['title'],
           borderRadius: MyBorderRadius.borderRadius,
           imageUrl: doc['image_url']);
@@ -83,13 +85,15 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   void _buildLatestStory(List totalPosts) {
+    latestPosts.clear();
     int totalPostsCount = totalPosts.length;
 
     latestPosts.addAll(totalPosts
         .getRange(0, (totalPostsCount >= 5) ? 4 : totalPostsCount - 1)
         .map((doc) {
       return PostCard(
-        width: MediaQuery.of(context).size.width * 0.4,
+        width: MediaQuery.of(context).size.width * 0.8,
+        // height: MediaQuery.of(context).size.height * 0.5,
         title: doc['title'],
         borderRadius: MyBorderRadius.borderRadius,
         imageUrl: doc['image_url'],
@@ -98,6 +102,7 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   void _buildUserInterests(List totalPosts) {
+    interestFeed.clear();
     Size size = MediaQuery.of(context).size;
 
     for (var i in _userDetails!['interests']) {
@@ -129,6 +134,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     children: i.value
                         .map((doc) => PostCard(
                             width: size.width * 0.4,
+                            // height: size.height * 0.2,
                             title: doc['title'],
                             borderRadius: MyBorderRadius.borderRadius,
                             imageUrl: doc['image_url']))
@@ -210,12 +216,35 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: ListView(
                   shrinkWrap: true,
                   children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(
+                          size.width * 0.045, size.height * 0.03, 0.0, size.height * 0.03),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'Top Stories',
+                            style: TextStyle(
+                              color: Color(0xff1E4B6C),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.006,
+                          ),
+                          FeedListView(
+                              height: size.height * 0.15,
+                              width: size.width,
+                              children: hotTopics),
+                        ],
+                      ),
+                    ),
                     FeedListView(
-                        height: size.height * 0.14,
-                        width: size.width,
-                        children: hotTopics),
-                    FeedListView(
-                        height: size.height * 0.19,
+                      //todo: change this to a page view widget
+                        height: size.height * 0.3,
                         width: size.width,
                         children: latestPosts),
                     Column(
