@@ -17,9 +17,10 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     Size size = MediaQuery.of(context).size;
+    double textScaleFactor = MediaQuery.of(context).textScaleFactor;
 
-    const TextStyle plainTextButton =
-        TextStyle(color: Colors.white, fontSize: 16);
+    final TextStyle plainTextButton =
+        TextStyle(color: Colors.white, fontSize: 16 * textScaleFactor);
 
     return Container(
       height: size.height,
@@ -38,7 +39,7 @@ class AuthGate extends StatelessWidget {
             child: Container(
               margin: EdgeInsets.only(top: size.height * 0.155),
               color: Colors.transparent,
-              height: size.height * 0.22,
+              // height: size.height * 0.22,
               width: size.width,
               child: Center(
                 child: Column(
@@ -53,7 +54,7 @@ class AuthGate extends StatelessWidget {
                       child: Text(
                         'Let\'s get you started',
                         style: theme.primaryTextTheme.labelLarge!
-                            .copyWith(fontWeight: FontWeight.w600),
+                            .copyWith(fontWeight: FontWeight.w600, fontSize: 24.0 * textScaleFactor),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -103,27 +104,30 @@ class AuthGate extends StatelessWidget {
           RepaintBoundary(
             child: Container(
               margin: EdgeInsets.only(top: size.height * 0.009),
-              padding: EdgeInsets.symmetric(horizontal: size.width * 0.18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Already have an account?',
-                    style: plainTextButton,
-                  ),
-                  SizedBox(
-                    width: size.width * 0.135,
-                    child: TextButton(
-                      onPressed: () =>
-                          Navigator.of(context).pushNamed(SignInForm.routeName),
-                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      child: const Text(
-                        'Login',
-                        style: plainTextButton,
+              // padding: EdgeInsets.symmetric(horizontal: size.width * 0.18),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Already have an account?',
+                      style: plainTextButton,
+                    ),
+                    SizedBox(
+                      // width: size.width * 0.2,
+                      child: TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed(SignInForm.routeName),
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                        child: Text(
+                          'Login',
+                          style: plainTextButton,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ).animate().fadeIn(curve: Curves.easeInOut),
           ),

@@ -24,8 +24,8 @@ class BlurredBgButton extends StatelessWidget {
     // ThemeData theme = Theme.of(context);
     Size size = MediaQuery.of(context).size;
 
-    const TextStyle blurredTextStyle = TextStyle(
-        fontSize: 16, color: Colors.white, fontWeight: FontWeight.w600);
+    final TextStyle blurredTextStyle = TextStyle(
+        fontSize: 16 * MediaQuery.of(context).textScaleFactor, color: Colors.white, fontWeight: FontWeight.w600);
     final BorderRadius blurredBorderRadius = BorderRadius.circular(20);
 
     return ClipRRect(
@@ -44,26 +44,23 @@ class BlurredBgButton extends StatelessWidget {
                 onTap();
               }
             },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: size.width * 0.08),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox.fromSize(
-                    size: const Size.fromRadius(12),
-                    child: FittedBox(
-                      child: iconWidget,
-                    ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox.fromSize(
+                  size: const Size.fromRadius(12),
+                  child: FittedBox(
+                    child: iconWidget,
                   ),
-                  SizedBox(
-                    width: size.width * 0.019,
-                  ),
-                  Text(
-                    text,
-                    style: blurredTextStyle,
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  width: size.width * 0.019,
+                ),
+                Text(
+                  text,
+                  style: blurredTextStyle,
+                ),
+              ],
             ),
           ),
         ),

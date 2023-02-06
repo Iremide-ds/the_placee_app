@@ -74,6 +74,7 @@ class _UserHomePageState extends State<UserHomePage> {
 
   void _buildHotTopics(List totalPosts) {
     hotTopics.clear();
+    hotTopics.add(SizedBox(width: MediaQuery.of(context).size.width * 0.045));
     hotTopics.addAll(totalPosts.map((doc) {
       return PostCard(
           width: MediaQuery.of(context).size.width * 0.4,
@@ -91,12 +92,15 @@ class _UserHomePageState extends State<UserHomePage> {
     latestPosts.addAll(totalPosts
         .getRange(0, (totalPostsCount >= 5) ? 4 : totalPostsCount - 1)
         .map((doc) {
-      return PostCard(
-        width: MediaQuery.of(context).size.width * 0.8,
-        // height: MediaQuery.of(context).size.height * 0.5,
-        title: doc['title'],
-        borderRadius: MyBorderRadius.borderRadius,
-        imageUrl: doc['image_url'],
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.045, vertical: MediaQuery.of(context).size.height * 0.03,),
+        child: PostCard(
+          width: MediaQuery.of(context).size.width * 0.8,
+          // height: MediaQuery.of(context).size.height * 0.5,
+          title: doc['title'],
+          borderRadius: MyBorderRadius.borderRadius,
+          imageUrl: doc['image_url'],
+        ),
       );
     }).toList());
   }
@@ -119,28 +123,43 @@ class _UserHomePageState extends State<UserHomePage> {
     }
 
     for (MapEntry<String, List> i in interestAndPosts.entries) {
+      final List<Widget> temp1 = [SizedBox(width: MediaQuery.of(context).size.width * 0.045)];
+      String topicString = i.key;
+      //ensure first char is in uppercase
+      topicString = topicString.replaceFirst(topicString.characters.first, topicString.characters.first.toUpperCase());
+      temp1.addAll(i.value
+          .map((doc) => PostCard(
+          width: size.width * 0.4,
+          // height: size.height * 0.2,
+          title: doc['title'],
+          borderRadius: MyBorderRadius.borderRadius,
+          imageUrl: doc['image_url']))
+          /*.toList()*/);
+
       Widget feed = Column(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(i.key),
-          Row(
-            children: [
-              SizedBox(
-                width: size.width,
-                height: size.height * 0.2,
-                child: FeedListView(
-                    height: size.height * 0.14,
-                    width: size.width,
-                    children: i.value
-                        .map((doc) => PostCard(
-                            width: size.width * 0.4,
-                            // height: size.height * 0.2,
-                            title: doc['title'],
-                            borderRadius: MyBorderRadius.borderRadius,
-                            imageUrl: doc['image_url']))
-                        .toList()),
+          Padding(
+            padding: EdgeInsets.only(left: size.width * 0.045),
+            child: Text(
+              topicString,
+              style: const TextStyle(
+                color: Color(0xff1E4B6C),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-            ],
+            ),
+          ),
+          SizedBox(
+            width: size.width,
+            height: size.height * 0.145,
+            child: FeedListView(
+              controller: ScrollController(),
+                height: size.height * 0.14,
+                width: size.width,
+                children: temp1),
           ),
         ],
       );
@@ -217,37 +236,48 @@ class _UserHomePageState extends State<UserHomePage> {
                   shrinkWrap: true,
                   children: [
                     Container(
-                      padding: EdgeInsets.fromLTRB(
-                          size.width * 0.045, size.height * 0.03, 0.0, size.height * 0.03),
+                      padding: EdgeInsets.fromLTRB(0.0, size.height * 0.021, 0.0, 0.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'Top Stories',
-                            style: TextStyle(
-                              color: Color(0xff1E4B6C),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          Padding(
+                            padding: EdgeInsets.only(left: size.width * 0.045),
+                            child: const Text(
+                              'Top Stories',
+                              style: TextStyle(
+                                color: Color(0xff1E4B6C),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           SizedBox(
                             height: size.height * 0.006,
                           ),
                           FeedListView(
+                            controller: ScrollController(initialScrollOffset: 2),
                               height: size.height * 0.15,
                               width: size.width,
                               children: hotTopics),
                         ],
                       ),
                     ),
-                    FeedListView(
-                      //todo: change this to a page view widget
-                        height: size.height * 0.3,
-                        width: size.width,
-                        children: latestPosts),
+                    SizedBox(
+                      height: size.height * 0.34,
+                      width: size.width,
+                      child: PageView(
+                        padEnds: false,
+                        controller: PageController(),
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        children: latestPosts,
+                      ),
+                    ),
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: interestFeed,
                     ),
@@ -262,12 +292,13 @@ class _UserHomePageState extends State<UserHomePage> {
 class FeedListView extends StatelessWidget {
   final double height, width;
   final List<Widget> children;
+  final ScrollController controller;
 
   const FeedListView(
       {Key? key,
       required this.height,
       required this.width,
-      required this.children})
+      required this.children, required this.controller})
       : super(key: key);
 
   @override
@@ -276,6 +307,7 @@ class FeedListView extends StatelessWidget {
       height: height,
       width: width,
       child: ListView(
+        controller: controller,
         physics: children.isEmpty
             ? const NeverScrollableScrollPhysics()
             : const BouncingScrollPhysics(),

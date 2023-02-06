@@ -42,7 +42,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         Provider.of<AuthProvider>(context, listen: true)
             .getCurrentUserLoggedInWithEmail;
     return AppBar(
-      scrolledUnderElevation: 0.0,
+      scrolledUnderElevation: 0.8,
       elevation: 0.0,
       backgroundColor: Colors.white,
       title: Center(
