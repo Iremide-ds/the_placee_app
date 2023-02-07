@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
-//App light theme
-class AppLightTheme {
-  final ThemeData themeData = ThemeData(
+//App theme
+class AppTheme {
+  static final ThemeData lightThemeData = ThemeData(
     useMaterial3: true,
     fontFamily: GoogleFonts.poppins().fontFamily,
     colorSchemeSeed: Colors.white,

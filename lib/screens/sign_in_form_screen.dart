@@ -237,7 +237,7 @@ class _SignInFormState extends State<SignInForm> {
         height: size.height,
         width: size.width,
         child: SingleChildScrollView(
-            child: _buildBody(context, MediaQuery.of(context).size)),
+            child: _buildBody(context, MediaQuery.of(context).size),),
       ),
     );
   }

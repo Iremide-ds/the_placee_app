@@ -10,6 +10,7 @@ import '../util/providers/auth_provider.dart';
 import '../widgets/user_home_page.dart';
 import '../widgets/user_explore_page.dart';
 import '../widgets/my_search_bar.dart';
+import '../screens/user_profile_screen.dart';
 
 class NewsFeedWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -62,18 +63,20 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
       ),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pushNamed(UserProfileScreen.routeName);
+          },
           icon: CircleAvatar(
             /*radius: avatarRadius,*/
             backgroundColor: const Color(0xffEBEBEB),
             child: SizedBox(
               height: avatarHeight,
               child: SvgPicture.network(
+                currentUserWithEmailLogin?.photoURL ??
+                    currentUser?.photoUrl as String,
                 placeholderBuilder: (ctx) {
                   return const CircularProgressIndicator();
                 },
-                currentUserWithEmailLogin?.photoURL ??
-                    'https://firebasestorage.googleapis.com/v0/b/the-placee.appspot.com/o/avatars%2Favatar_5.svg?alt=media&token=f56ecf65-3504-4530-864a-db1b2f9353b9',
                 fit: BoxFit.contain,
                 semanticsLabel: 'your profile',
               ),
