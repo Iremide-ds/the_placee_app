@@ -52,6 +52,7 @@ class _UserHomePageState extends State<UserHomePage> {
       }
       return;
     }
+    _userInterests.clear();
     for (String id in _userDetails!['interests']) {
       await FirebaseFirestore.instance
           .collection('topics')
@@ -93,21 +94,76 @@ class _UserHomePageState extends State<UserHomePage> {
         .getRange(0, (totalPostsCount >= 5) ? 4 : totalPostsCount - 1)
         .map((doc) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.045, vertical: MediaQuery.of(context).size.height * 0.03,),
-        child: PostCard(
-          width: MediaQuery.of(context).size.width * 0.8,
-          // height: MediaQuery.of(context).size.height * 0.5,
-          title: doc['title'],
-          borderRadius: MyBorderRadius.borderRadius,
-          imageUrl: doc['image_url'],
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.045,
+          vertical: MediaQuery.of(context).size.height * 0.03,
         ),
+        child: Card(
+          elevation: 1.0,
+          shape: const RoundedRectangleBorder(borderRadius: MyBorderRadius.borderRadius),
+          child: SizedBox(
+            // height: height,
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: MyBorderRadius.borderRadius,
+                    color: Colors.transparent,
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: NetworkImage(
+                        doc['image_url'],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: MyBorderRadius.borderRadius,
+                    color: Colors.white,
+                    gradient: LinearGradient(
+                      begin: FractionalOffset.topCenter,
+                      end: FractionalOffset.bottomCenter,
+                      colors: [
+                        Colors.grey.withOpacity(0.0),
+                        Colors.black54.withOpacity(0.9),
+                      ],
+                      stops: const [0.0, 1.0],
+                    ),
+                  ),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0, bottom: 12.0),
+                      child: Text(
+                        doc['title'],
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: EdgeInsets.only(top:MediaQuery.of(context).size.height * 0.016, right: MediaQuery.of(context).size.width * 0.08),
+                    child: const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.explore, color: Color(0xff1E4B6C)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
       );
     }).toList());
   }
 
   void _buildUserInterests(List totalPosts) {
     interestFeed.clear();
-    Size size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
 
     for (var i in _userDetails!['interests']) {
       List tempCon = totalPosts.where((element) {
@@ -123,18 +179,19 @@ class _UserHomePageState extends State<UserHomePage> {
     }
 
     for (MapEntry<String, List> i in interestAndPosts.entries) {
-      final List<Widget> temp1 = [SizedBox(width: MediaQuery.of(context).size.width * 0.045)];
+      final List<Widget> temp1 = [
+        SizedBox(width: MediaQuery.of(context).size.width * 0.045)
+      ];
       String topicString = i.key;
       //ensure first char is in uppercase
-      topicString = topicString.replaceFirst(topicString.characters.first, topicString.characters.first.toUpperCase());
-      temp1.addAll(i.value
-          .map((doc) => PostCard(
+      topicString = topicString.replaceFirst(topicString.characters.first,
+          topicString.characters.first.toUpperCase());
+      temp1.addAll(i.value.map((doc) => PostCard(
           width: size.width * 0.4,
           // height: size.height * 0.2,
           title: doc['title'],
           borderRadius: MyBorderRadius.borderRadius,
-          imageUrl: doc['image_url']))
-          /*.toList()*/);
+          imageUrl: doc['image_url'])) /*.toList()*/);
 
       Widget feed = Column(
         mainAxisSize: MainAxisSize.min,
@@ -156,7 +213,7 @@ class _UserHomePageState extends State<UserHomePage> {
             width: size.width,
             height: size.height * 0.145,
             child: FeedListView(
-              controller: ScrollController(),
+                controller: ScrollController(),
                 height: size.height * 0.14,
                 width: size.width,
                 children: temp1),
@@ -236,7 +293,8 @@ class _UserHomePageState extends State<UserHomePage> {
                   shrinkWrap: true,
                   children: [
                     Container(
-                      padding: EdgeInsets.fromLTRB(0.0, size.height * 0.021, 0.0, 0.0),
+                      padding: EdgeInsets.fromLTRB(
+                          0.0, size.height * 0.021, 0.0, 0.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,7 +315,8 @@ class _UserHomePageState extends State<UserHomePage> {
                             height: size.height * 0.006,
                           ),
                           FeedListView(
-                            controller: ScrollController(initialScrollOffset: 2),
+                              controller:
+                                  ScrollController(initialScrollOffset: 2),
                               height: size.height * 0.15,
                               width: size.width,
                               children: hotTopics),
@@ -298,7 +357,8 @@ class FeedListView extends StatelessWidget {
       {Key? key,
       required this.height,
       required this.width,
-      required this.children, required this.controller})
+      required this.children,
+      required this.controller})
       : super(key: key);
 
   @override

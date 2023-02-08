@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -155,7 +155,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
       appBar: _buildAppBar(
           size.height * 0.036, size.height * 0.049, size.width * 0.599),
       drawer: _buildDrawer(),
-      body: _homeOrExplore[_index],
+      body: _homeOrExplore[_index].animate().fadeIn(curve: Curves.easeIn),
       bottomNavigationBar: Container(
         color: Colors.transparent,
         margin: EdgeInsets.only(bottom: size.height * 0.02),

@@ -14,10 +14,11 @@ import './screens/sign_in_form_screen.dart';
 import './screens/spalsh_screen.dart';
 import './screens/user_profile_screen.dart';
 import './util/providers/auth_provider.dart';
+import './util/providers/db_provider.dart';
 
 PendingDynamicLinkData? initialLink;
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
@@ -51,7 +52,10 @@ class MyApp extends StatelessWidget {
     }
 
     return MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: AuthProvider())],
+      providers: [
+        ChangeNotifierProvider.value(value: AuthProvider()),
+        ChangeNotifierProvider.value(value: DBProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'The Placee',

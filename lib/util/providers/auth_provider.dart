@@ -98,10 +98,12 @@ class AuthProvider with ChangeNotifier {
     Navigator.of(context).pushNamed(route);
   }
 
-  void signOut() {
-    FirebaseAuth.instance.signOut();
+  void signOut() async {
+    await FirebaseAuth.instance.signOut();
     _currentUser = null;
     _currentUserEmail = null;
     notifyListeners();
   }
+
+  get getUserDetails {}
 }
