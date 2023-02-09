@@ -5,13 +5,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../screens/article_screen.dart';
 import './post_card_widget.dart';
 import '../util/providers/auth_provider.dart';
 import '../constants/my_constants.dart';
 
 //news feed
 class UserHomePage extends StatefulWidget {
-  const UserHomePage({Key? key}) : super(key: key);
+  final Function changeScreen;
+
+  const UserHomePage({Key? key, required this.changeScreen}) : super(key: key);
 
   @override
   State<UserHomePage> createState() => _UserHomePageState();
@@ -78,11 +81,14 @@ class _UserHomePageState extends State<UserHomePage> {
     hotTopics.add(SizedBox(width: MediaQuery.of(context).size.width * 0.045));
     hotTopics.addAll(totalPosts.map((doc) {
       return PostCard(
-          width: MediaQuery.of(context).size.width * 0.4,
-          // height: MediaQuery.of(context).size.height * 0.2,
-          title: doc['title'],
-          borderRadius: MyBorderRadius.borderRadius,
-          imageUrl: doc['image_url']);
+        width: MediaQuery.of(context).size.width * 0.4,
+        // height: MediaQuery.of(context).size.height * 0.2,
+        title: doc['title'],
+        borderRadius: MyBorderRadius.borderRadius,
+        imageUrl: doc['image_url'],
+        post: doc,
+        changeScreen: widget.changeScreen,
+      );
     }).toList());
   }
 
@@ -94,70 +100,77 @@ class _UserHomePageState extends State<UserHomePage> {
         .getRange(0, (totalPostsCount >= 5) ? 4 : totalPostsCount - 1)
         .map((doc) {
       return Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.width * 0.045,
-          vertical: MediaQuery.of(context).size.height * 0.03,
-        ),
-        child: Card(
-          elevation: 1.0,
-          shape: const RoundedRectangleBorder(borderRadius: MyBorderRadius.borderRadius),
-          child: SizedBox(
-            // height: height,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: MyBorderRadius.borderRadius,
-                    color: Colors.transparent,
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(
-                        doc['image_url'],
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: MyBorderRadius.borderRadius,
-                    color: Colors.white,
-                    gradient: LinearGradient(
-                      begin: FractionalOffset.topCenter,
-                      end: FractionalOffset.bottomCenter,
-                      colors: [
-                        Colors.grey.withOpacity(0.0),
-                        Colors.black54.withOpacity(0.9),
-                      ],
-                      stops: const [0.0, 1.0],
-                    ),
-                  ),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0, bottom: 12.0),
-                      child: Text(
-                        doc['title'],
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(top:MediaQuery.of(context).size.height * 0.016, right: MediaQuery.of(context).size.width * 0.08),
-                    child: const CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.explore, color: Color(0xff1E4B6C)),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.045,
+            vertical: MediaQuery.of(context).size.height * 0.03,
           ),
-        )
-      );
+          child: GestureDetector(
+            onTap: () => Navigator.of(context)
+                .pushNamed(ArticleScreen.routeName, arguments: {'post': doc, 'function': widget.changeScreen}),
+            child: Card(
+              elevation: 1.0,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: MyBorderRadius.borderRadius),
+              child: SizedBox(
+                // height: height,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: MyBorderRadius.borderRadius,
+                        color: Colors.transparent,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: NetworkImage(
+                            doc['image_url'],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: MyBorderRadius.borderRadius,
+                        color: Colors.white,
+                        gradient: LinearGradient(
+                          begin: FractionalOffset.topCenter,
+                          end: FractionalOffset.bottomCenter,
+                          colors: [
+                            Colors.grey.withOpacity(0.0),
+                            Colors.black54.withOpacity(0.9),
+                          ],
+                          stops: const [0.0, 1.0],
+                        ),
+                      ),
+                      child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 10.0, bottom: 12.0),
+                          child: Text(
+                            doc['title'],
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.016,
+                            right: MediaQuery.of(context).size.width * 0.08),
+                        child: const CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.explore, color: Color(0xff1E4B6C)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ));
     }).toList());
   }
 
@@ -186,12 +199,17 @@ class _UserHomePageState extends State<UserHomePage> {
       //ensure first char is in uppercase
       topicString = topicString.replaceFirst(topicString.characters.first,
           topicString.characters.first.toUpperCase());
-      temp1.addAll(i.value.map((doc) => PostCard(
+      temp1.addAll(i.value.map(
+        (doc) => PostCard(
           width: size.width * 0.4,
           // height: size.height * 0.2,
           title: doc['title'],
           borderRadius: MyBorderRadius.borderRadius,
-          imageUrl: doc['image_url'])) /*.toList()*/);
+          imageUrl: doc['image_url'],
+          post: doc,
+          changeScreen: widget.changeScreen,
+        ),
+      ) /*.toList()*/);
 
       Widget feed = Column(
         mainAxisSize: MainAxisSize.min,

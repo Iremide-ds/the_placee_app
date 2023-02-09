@@ -13,6 +13,7 @@ import './screens/sign_up_form_screen.dart';
 import './screens/sign_in_form_screen.dart';
 import './screens/spalsh_screen.dart';
 import './screens/user_profile_screen.dart';
+import './screens/article_screen.dart';
 import './util/providers/auth_provider.dart';
 import './util/providers/db_provider.dart';
 
@@ -39,7 +40,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   // This widget is the root of the application.
@@ -60,15 +60,33 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'The Placee',
         theme: AppTheme.lightThemeData,
-        initialRoute: MySplashScreen.routeName,
+        // initialRoute: MySplashScreen.routeName,
         routes: {
           '/': (_) => const AppLandingPage(),
           SignUpForm.routeName: (_) => const SignUpForm(),
           SignInForm.routeName: (_) => const SignInForm(),
           MySplashScreen.routeName: (_) => const MySplashScreen(),
           UserProfileScreen.routeName: (_) => const UserProfileScreen(),
+          // ArticleScreen.routeName: (_) => const ArticleScreen(),
         },
-        themeAnimationCurve: Curves.easeIn,
+        onGenerateRoute: (settings) {
+          if (settings.name == ArticleScreen.routeName) {
+            if (settings.arguments != null) {
+              final args = settings.arguments as Map;
+
+              return MaterialPageRoute(
+                builder: (context) {
+                  return ArticleScreen(
+                    post: args['post'],
+                    changeScreen: args['function'],
+                  );
+                },
+              );
+            }
+          }
+          assert(false, 'Need to implement ${settings.name}');
+          return null;
+        },
       ),
     );
   }

@@ -36,7 +36,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
     }
 
     List<QueryDocumentSnapshot<Object?>> allPosts =
-        await Provider.of<DBProvider>(context, listen: false).getAllPosts();
+        await Provider.of<DBProvider>(context, listen: false).getAllPosts(false);
 
     for (var post in allPosts) {
       if (post.get('title').contains(text)) {
@@ -61,6 +61,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
     User? currentUserWithEmailLogin =
         Provider.of<AuthProvider>(context, listen: true)
             .getCurrentUserLoggedInWithEmail;
+
     return AppBar(
       scrolledUnderElevation: 0.8,
       elevation: 0.0,
@@ -68,12 +69,14 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
       title: Visibility(
         visible: (_index == 1),
         child: Center(
-          child: MySearchBar(
-            searchController: searchController,
-            height: searchBarHeight,
-            width: searchBarWidth,
-            searchFunction: _searchArticles,
-          ).animate().fadeIn(),
+          child: RepaintBoundary(
+            child: MySearchBar(
+              searchController: searchController,
+              height: searchBarHeight,
+              width: searchBarWidth,
+              searchFunction: _searchArticles,
+            ).animate().fadeIn(),
+          ),
         ),
       ),
       leading: IconButton(
@@ -180,8 +183,11 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
           size.height * 0.036, size.height * 0.049, size.width * 0.599),
       drawer: _buildDrawer(),
       body: (_index == 0)
-          ? const UserHomePage().animate().fadeIn(curve: Curves.easeIn)
-          : UserExplorePage(searchResults: _searchResult)
+          ? UserHomePage(changeScreen: _changeScreen)
+              .animate()
+              .fadeIn(curve: Curves.easeIn)
+          : UserExplorePage(
+                  searchResults: _searchResult, changeScreen: _changeScreen)
               .animate()
               .fadeIn(curve: Curves.easeIn),
       bottomNavigationBar: Container(

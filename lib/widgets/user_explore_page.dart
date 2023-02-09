@@ -8,8 +8,9 @@ import '../constants/my_constants.dart';
 
 class UserExplorePage extends StatefulWidget {
   final List<Widget> searchResults;
+  final Function changeScreen;
 
-  const UserExplorePage({Key? key, required this.searchResults})
+  const UserExplorePage({Key? key, required this.searchResults, required this.changeScreen})
       : super(key: key);
 
   @override
@@ -25,11 +26,14 @@ class _UserExplorePageState extends State<UserExplorePage> {
     _hotTopics.add(SizedBox(width: MediaQuery.of(context).size.width * 0.045));
     _hotTopics.addAll(totalPosts.map((doc) {
       return PostCard(
-          width: MediaQuery.of(context).size.width * 0.4,
-          // height: MediaQuery.of(context).size.height * 0.2,
-          title: doc['title'],
-          borderRadius: MyBorderRadius.borderRadius,
-          imageUrl: doc['image_url']);
+        width: MediaQuery.of(context).size.width * 0.4,
+        // height: MediaQuery.of(context).size.height * 0.2,
+        title: doc['title'],
+        borderRadius: MyBorderRadius.borderRadius,
+        imageUrl: doc['image_url'],
+        post: doc,
+        changeScreen: widget.changeScreen,
+      );
     }).toList());
   }
 
@@ -43,11 +47,14 @@ class _UserExplorePageState extends State<UserExplorePage> {
           crossAxisCellCount: 1,
           mainAxisCellCount: (count % 2 == 0) ? 1.7 : 2,
           child: PostCard(
-              width: MediaQuery.of(context).size.width * 0.4,
-              // height: MediaQuery.of(context).size.height * 0.2,
-              title: doc['title'],
-              borderRadius: MyBorderRadius.borderRadius2,
-              imageUrl: doc['image_url']));
+            width: MediaQuery.of(context).size.width * 0.4,
+            // height: MediaQuery.of(context).size.height * 0.2,
+            title: doc['title'],
+            borderRadius: MyBorderRadius.borderRadius2,
+            imageUrl: doc['image_url'],
+            post: doc,
+            changeScreen: widget.changeScreen,
+          ),);
     }).toList());
   }
 

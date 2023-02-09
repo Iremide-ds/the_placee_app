@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 import './auth_provider.dart';
 
 class DBProvider with ChangeNotifier {
+  final CollectionReference _userDetailsRef =
+      FirebaseFirestore.instance.collection('user_details');
+
   final Map<String, String> _userInterests = {};
   final List<QueryDocumentSnapshot<Object?>> _allTopics = [];
   Map _userDetails = {};
@@ -22,8 +25,16 @@ class DBProvider with ChangeNotifier {
     return _userInterests;
   }
 
-  Future<List<QueryDocumentSnapshot<Object?>>> getAllPosts() async {
-    if (_allTopics.isEmpty) await _fetchAllTopics();
+  Future<List<QueryDocumentSnapshot<Object?>>> getAllPosts(bool refresh) async {
+    if (kDebugMode) {
+      print('fetching posts');
+    }
+    if (_allTopics.isEmpty || refresh) {
+      if (kDebugMode) {
+        print('refreshing posts');
+      }
+      await _fetchAllTopics();
+    }
     return _allTopics;
   }
 
@@ -33,13 +44,13 @@ class DBProvider with ChangeNotifier {
     var currentUserEmail = Provider.of<AuthProvider>(context, listen: false)
         .getCurrentUserLoggedInWithEmail;
 
-    await FirebaseFirestore.instance
-        .collection('user_details')
+    await _userDetailsRef
         .where('email',
             isEqualTo: currentUserGoogle?.email ?? currentUserEmail?.email)
         .limit(1)
         .get()
         .then((result) {
+      result = result as QuerySnapshot<Map<String, dynamic>>;
       _userDetails = result.docs.first.data();
     });
   }
@@ -67,14 +78,17 @@ class DBProvider with ChangeNotifier {
         _userInterests[id.toString()] = result.docs.first.data()['name'];
       });
     }
+    notifyListeners();
   }
 
   Future<void> _fetchAllTopics() async {
+    _allTopics.clear();
     var posts = await FirebaseFirestore.instance
         .collection('posts')
         .orderBy("date", descending: true)
         .get();
 
     _allTopics.addAll(posts.docs);
+    notifyListeners();
   }
 }
