@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 class MySearchBar extends StatelessWidget {
   final double height;
   final double width;
-  final VoidCallback searchFunction;
+  final Function searchFunction;
+  final TextEditingController searchController;
 
-  const MySearchBar({super.key, required this.height, required this.width, required this.searchFunction,});
+  const MySearchBar({super.key, required this.height, required this.width, required this.searchFunction, required this.searchController,});
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
-
     return TextField(
       controller: searchController,
       decoration: InputDecoration(
@@ -34,10 +33,12 @@ class MySearchBar extends StatelessWidget {
         ),
         prefixIcon: IconButton(
           icon: const Icon(Icons.search),
-          onPressed: () => searchFunction,
+          onPressed: () => searchFunction(searchController.text),
         ),
         contentPadding: EdgeInsets.zero,
       ),
+      onChanged: (text) => searchFunction(text),
+      onSubmitted: (text) => searchFunction(text),
       textAlign: TextAlign.left,
       autocorrect: true,
       textInputAction: TextInputAction.search,

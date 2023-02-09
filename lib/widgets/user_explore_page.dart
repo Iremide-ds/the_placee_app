@@ -7,7 +7,10 @@ import './post_card_widget.dart';
 import '../constants/my_constants.dart';
 
 class UserExplorePage extends StatefulWidget {
-  const UserExplorePage({Key? key}) : super(key: key);
+  final List<Widget> searchResults;
+
+  const UserExplorePage({Key? key, required this.searchResults})
+      : super(key: key);
 
   @override
   State<UserExplorePage> createState() => _UserExplorePageState();
@@ -31,15 +34,20 @@ class _UserExplorePageState extends State<UserExplorePage> {
   }
 
   void _buildExploreFeed(List totalPosts) {
+    int count = 0;
     _topicsFeed.clear();
     _topicsFeed.add(SizedBox(width: MediaQuery.of(context).size.width * 0.045));
     _topicsFeed.addAll(totalPosts.map((doc) {
-      return PostCard(
-          width: MediaQuery.of(context).size.width * 0.4,
-          // height: MediaQuery.of(context).size.height * 0.2,
-          title: doc['title'],
-          borderRadius: MyBorderRadius.borderRadius,
-          imageUrl: doc['image_url']);
+      count += 1;
+      return StaggeredGridTile.count(
+          crossAxisCellCount: 1,
+          mainAxisCellCount: (count % 2 == 0) ? 1.7 : 2,
+          child: PostCard(
+              width: MediaQuery.of(context).size.width * 0.4,
+              // height: MediaQuery.of(context).size.height * 0.2,
+              title: doc['title'],
+              borderRadius: MyBorderRadius.borderRadius2,
+              imageUrl: doc['image_url']));
     }).toList());
   }
 
@@ -104,11 +112,41 @@ class _UserExplorePageState extends State<UserExplorePage> {
                   ],
                 ),
               ),
-              SizedBox(
-                width: size.width,
-                child: StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  children: _topicsFeed,
+              Container(
+                padding: EdgeInsets.fromLTRB(size.width * 0.02,
+                    size.height * 0.021, size.width * 0.02, 0.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: size.width * 0.04),
+                      child: Text(
+                        widget.searchResults.isEmpty ? 'Trending' : 'Results',
+                        style: const TextStyle(
+                          color: Color(0xff1E4B6C),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.006,
+                    ),
+                    SizedBox(
+                      width: size.width,
+                      child: widget.searchResults.isEmpty
+                          ? StaggeredGrid.count(
+                              crossAxisCount: 2,
+                              children: _topicsFeed,
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: widget.searchResults,
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ],

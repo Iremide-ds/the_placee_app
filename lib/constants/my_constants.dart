@@ -51,6 +51,7 @@ class MyBorderRadius {
     topLeft: Radius.circular(radius),
     topRight: Radius.circular(radius),
   );
+  static const borderRadius2 = BorderRadius.all(Radius.circular(radius));
 }
 
 class MyAnimationAttributes {

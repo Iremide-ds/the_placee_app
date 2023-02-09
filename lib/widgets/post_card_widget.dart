@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PostCard extends StatelessWidget {
-  final double width/*, height*/;
+  final double width /*, height*/;
+
   final String title;
   final BorderRadius borderRadius;
   final String imageUrl;
@@ -11,7 +12,8 @@ class PostCard extends StatelessWidget {
       required this.width,
       required this.title,
       required this.borderRadius,
-      required this.imageUrl/*, required this.height*/})
+      required this.imageUrl /*, required this.height*/
+      })
       : super(key: key);
 
   @override
@@ -56,7 +58,10 @@ class PostCard extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 10.0, bottom: 12.0),
                   child: Text(
                     title,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14 * MediaQuery.of(context).textScaleFactor,
+                    ),
                   ),
                 ),
               ),

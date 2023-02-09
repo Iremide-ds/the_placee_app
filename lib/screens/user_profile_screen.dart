@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
@@ -75,8 +76,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  void _searchArticle() {}
-
   PreferredSizeWidget _buildAppBar(
       double avatarHeight, double searchBarHeight, double searchBarWidth) {
     return AppBar(
@@ -84,11 +83,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       elevation: 0.0,
       backgroundColor: Colors.white,
       title: Center(
-          child: MySearchBar(
-        height: searchBarHeight,
-        width: searchBarWidth,
-        searchFunction: _searchArticle,
-      )),
+        child: Text(
+          'Your Profile',
+          style: TextStyle(
+            color: const Color(0xff1E4B6C),
+            fontWeight: FontWeight.w600,
+            fontSize: 16 * MediaQuery.textScaleFactorOf(context),
+          ),
+        ),
+      ),
       leading: IconButton(
         onPressed: () {
           Navigator.of(context).pop();
@@ -278,7 +281,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ),
                       ),
                       onPressed: () {
-                        Provider.of<AuthProvider>(context, listen: false).signOut();
+                        Provider.of<AuthProvider>(context, listen: false)
+                            .signOut();
                         Navigator.of(context).pop();
                       },
                       child: Center(

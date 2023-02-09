@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../util/providers/auth_provider.dart';
+import '../util/providers/db_provider.dart';
 import '../widgets/user_home_page.dart';
 import '../widgets/user_explore_page.dart';
 import '../widgets/my_search_bar.dart';
@@ -22,10 +24,27 @@ class NewsFeedWidget extends StatefulWidget {
 }
 
 class _NewsFeedWidgetState extends State<NewsFeedWidget> {
-  final List<Widget> _homeOrExplore = const [UserHomePage(), UserExplorePage()];
+  final TextEditingController searchController = TextEditingController();
+  final List<Widget> _searchResult = [];
   int _index = 0;
 
-  void _searchArticle() {}
+  void _searchArticles(String text) async {
+    _searchResult.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+
+    List<QueryDocumentSnapshot<Object?>> allPosts =
+        await Provider.of<DBProvider>(context, listen: false).getAllPosts();
+
+    for (var post in allPosts) {
+      if (post.get('title').contains(text)) {
+        _searchResult.add(Text(post['title']));
+      }
+    }
+    setState(() {});
+  }
 
   void _changeScreen(int index) {
     if (index != _index) {
@@ -46,12 +65,17 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
       scrolledUnderElevation: 0.8,
       elevation: 0.0,
       backgroundColor: Colors.white,
-      title: Center(
+      title: Visibility(
+        visible: (_index == 1),
+        child: Center(
           child: MySearchBar(
-        height: searchBarHeight,
-        width: searchBarWidth,
-        searchFunction: _searchArticle,
-      )),
+            searchController: searchController,
+            height: searchBarHeight,
+            width: searchBarWidth,
+            searchFunction: _searchArticles,
+          ).animate().fadeIn(),
+        ),
+      ),
       leading: IconButton(
         onPressed: () {
           widget.scaffoldKey.currentState?.openDrawer();
@@ -155,7 +179,11 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
       appBar: _buildAppBar(
           size.height * 0.036, size.height * 0.049, size.width * 0.599),
       drawer: _buildDrawer(),
-      body: _homeOrExplore[_index].animate().fadeIn(curve: Curves.easeIn),
+      body: (_index == 0)
+          ? const UserHomePage().animate().fadeIn(curve: Curves.easeIn)
+          : UserExplorePage(searchResults: _searchResult)
+              .animate()
+              .fadeIn(curve: Curves.easeIn),
       bottomNavigationBar: Container(
         color: Colors.transparent,
         margin: EdgeInsets.only(bottom: size.height * 0.02),
