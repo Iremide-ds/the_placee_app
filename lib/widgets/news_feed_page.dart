@@ -26,7 +26,10 @@ class NewsFeedWidget extends StatefulWidget {
 class _NewsFeedWidgetState extends State<NewsFeedWidget> {
   final TextEditingController searchController = TextEditingController();
   final List<Widget> _searchResult = [];
+  PageController? _controller;
   int _index = 0;
+
+  // final double _screenPad = 16.0;
 
   void _searchArticles(String text) async {
     _searchResult.clear();
@@ -36,7 +39,8 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
     }
 
     List<QueryDocumentSnapshot<Object?>> allPosts =
-        await Provider.of<DBProvider>(context, listen: false).getAllPosts(false);
+        await Provider.of<DBProvider>(context, listen: false)
+            .getAllPosts(false);
 
     for (var post in allPosts) {
       if (post.get('title').contains(text)) {
@@ -48,9 +52,9 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
 
   void _changeScreen(int index) {
     if (index != _index) {
-      setState(() {
-        _index = index;
-      });
+      _controller?.animateToPage(index,
+          duration: const Duration(milliseconds: 290),
+          curve: Curves.fastOutSlowIn);
     }
   }
 
@@ -115,60 +119,191 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
   }
 
   Widget _buildDrawer() {
+    final Size size = MediaQuery.of(context).size;
+    final double textScaleFactor = MediaQuery.textScaleFactorOf(context);
+
     GoogleSignInAccount? currentUser =
         Provider.of<AuthProvider>(context, listen: true).getCurrentUser;
     User? currentUserWithEmailLogin =
         Provider.of<AuthProvider>(context, listen: true)
             .getCurrentUserLoggedInWithEmail;
 
+    final List<Map<String, dynamic>> drawerActions = [
+      {
+        'title': 'News Feed',
+        'icon': Icons.feed_outlined,
+        'onTap': () {
+          _changeScreen(0);
+          widget.scaffoldKey.currentState?.closeDrawer();
+        }
+      },
+      {
+        'title': 'Explore',
+        'icon': Icons.explore_outlined,
+        'onTap': () {
+          _changeScreen(1);
+          widget.scaffoldKey.currentState?.closeDrawer();
+        }
+      },
+      {
+        'title': 'Feedback & Help',
+        'icon': Icons.feedback_outlined,
+        'onTap': () {
+          //todo: create feedback route
+           }
+      },
+    ];
+
     if (currentUser != null) {
       return Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              child: Column(
-                children: [
-                  Text(
-                    currentUser.displayName ?? currentUser.email,
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        Provider.of<AuthProvider>(context, listen: false)
-                            .signOut(),
-                    child: const Text('Sign out'),
-                  ),
-                ],
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 18.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: size.height * 0.06),
+              CircleAvatar(
+                backgroundColor: const Color(0xffEBEBEB),
+                maxRadius: MediaQuery.of(context).size.width * 0.22,
+                child: SvgPicture.network(
+                  currentUser.photoUrl!,
+                  placeholderBuilder: (context) {
+                    return const CircularProgressIndicator();
+                  },
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: size.height * 0.02),
+              Text(
+                currentUser.displayName ?? currentUser.email,
+                style: TextStyle(
+                  color: const Color(0xff1E4B6C),
+                  fontSize: 20 * MediaQuery.textScaleFactorOf(context),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: size.height * 0.02),
+              Expanded(
+                child: Container(
+                  width: double.maxFinite,
+                  color: Colors.white,
+                  child: Column(
+                    // mainAxisSize: MainAxisSize.min,
+                    children: drawerActions.map((dashboardAction) {
+                      return ListTile(
+                        onTap: dashboardAction['onTap'],
+                        title: Text(dashboardAction['title']),
+                        leading: Icon(dashboardAction['icon']),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  //todo: generate and share dynamic link
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.share),
+                    SizedBox(width: size.width * 0.03),
+                    Text(
+                      'Share with a friend',
+                      style: TextStyle(
+                        color: const Color(0xff1E4B6C),
+                        fontSize: 20 * textScaleFactor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     } else if (currentUserWithEmailLogin != null) {
       return Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              child: Column(
-                children: [
-                  Text(
-                    currentUserWithEmailLogin.displayName ??
-                        currentUserWithEmailLogin.email as String,
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        Provider.of<AuthProvider>(context, listen: false)
-                            .signOut(),
-                    child: const Text('Sign out'),
-                  ),
-                ],
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 18.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: size.height * 0.06),
+              CircleAvatar(
+                backgroundColor: const Color(0xffEBEBEB),
+                maxRadius: MediaQuery.of(context).size.width * 0.22,
+                child: SvgPicture.network(
+                  currentUserWithEmailLogin.photoURL as String,
+                  placeholderBuilder: (context) {
+                    return const CircularProgressIndicator();
+                  },
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: size.height * 0.02),
+              Text(
+                currentUserWithEmailLogin.displayName ??
+                    currentUserWithEmailLogin.email as String,
+                style: TextStyle(
+                  color: const Color(0xff1E4B6C),
+                  fontSize: 20 * textScaleFactor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: size.height * 0.02),
+              Expanded(
+                child: Container(
+                  width: double.maxFinite,
+                  color: Colors.white,
+                  child: Column(
+                    // mainAxisSize: MainAxisSize.min,
+                    children: drawerActions.map((dashboardAction) {
+                      return ListTile(
+                        onTap: dashboardAction['onTap'],
+                        title: Text(dashboardAction['title']),
+                        leading: Icon(dashboardAction['icon']),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: TextButton(
+                  onPressed: () {},
+                  child: Row(
+                    children: [
+                      const Icon(Icons.share),
+                      Text(
+                        'Share with a friend',
+                        style: TextStyle(
+                          color: const Color(0xff1E4B6C),
+                          fontSize: 20 * textScaleFactor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     } else {
       return const Drawer();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(
+      initialPage: _index,
+      // viewportFraction: (1 + (_screenPad * 2 / widget.screenWidth)),
+    );
   }
 
   @override
@@ -182,14 +317,22 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
       appBar: _buildAppBar(
           size.height * 0.036, size.height * 0.049, size.width * 0.599),
       drawer: _buildDrawer(),
-      body: (_index == 0)
-          ? UserHomePage(changeScreen: _changeScreen)
-              .animate()
-              .fadeIn(curve: Curves.easeIn)
-          : UserExplorePage(
-                  searchResults: _searchResult, changeScreen: _changeScreen)
-              .animate()
-              .fadeIn(curve: Curves.easeIn),
+      body: PageView(
+          padEnds: false,
+          controller: _controller,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          onPageChanged: (int page) {
+            setState(() {
+              _index = page;
+            });
+          },
+          children: [
+            UserHomePage(changeScreen: _changeScreen),
+            UserExplorePage(
+                searchResults: _searchResult, changeScreen: _changeScreen)
+          ]),
+      extendBody: true,
       bottomNavigationBar: Container(
         color: Colors.transparent,
         margin: EdgeInsets.only(bottom: size.height * 0.02),
@@ -199,6 +342,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
           child: Card(
             color: Colors.white,
             elevation: 2.3,
+            surfaceTintColor: Colors.transparent,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(29)),
             child: Row(

@@ -7,7 +7,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../screens/article_screen.dart';
 import './post_card_widget.dart';
-import '../util/providers/auth_provider.dart';
+// import '../util/providers/auth_provider.dart';
+import '../util/providers/db_provider.dart';
 import '../constants/my_constants.dart';
 
 //news feed
@@ -30,20 +31,10 @@ class _UserHomePageState extends State<UserHomePage> {
   bool _isLoading = true;
 
   Future<void> _getCurrentUserDetails() async {
-    var currentUserGoogle =
-        Provider.of<AuthProvider>(context, listen: false).getCurrentUser;
-    var currentUserEmail = Provider.of<AuthProvider>(context, listen: false)
-        .getCurrentUserLoggedInWithEmail;
-
-    await FirebaseFirestore.instance
-        .collection('user_details')
-        .where('email',
-            isEqualTo: currentUserGoogle?.email ?? currentUserEmail?.email)
-        .limit(1)
-        .get()
+    await Provider.of<DBProvider>(context, listen: false).getUserDetails(context)
         .then((result) {
       setState(() {
-        _userDetails = result.docs.first.data();
+        _userDetails = result;
       });
     });
   }
@@ -239,7 +230,9 @@ class _UserHomePageState extends State<UserHomePage> {
         ],
       );
       interestFeed.add(feed);
+      print('.................1\n');
     }
+    print('.................\n');
   }
 
   @override
@@ -289,6 +282,8 @@ class _UserHomePageState extends State<UserHomePage> {
               _buildHotTopics(totalPosts);
               _buildLatestStory(totalPosts);
               _buildUserInterests(totalPosts);
+
+              print('........\n');
 
               if (kDebugMode) {
                 print('debugging - ${interestAndPosts.length}');

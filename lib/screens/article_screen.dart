@@ -152,136 +152,139 @@ class _ArticleScreenState extends State<ArticleScreen> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
                 width: size.width,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.post.get('title'),
-                      style: TextStyle(
-                        color: const Color(0xff1E4B6C),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 24 * textScaleFactor,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.post.get('title'),
+                        style: TextStyle(
+                          color: const Color(0xff1E4B6C),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24 * textScaleFactor,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: size.height * 0.009),
-                    Text(
-                      widget.post.get('content'),
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16 * textScaleFactor,
+                      SizedBox(height: size.height * 0.009),
+                      Text(
+                        widget.post.get('content'),
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16 * textScaleFactor,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: size.width,
-                      height: size.height * 0.1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              maximumSize: Size.fromWidth(size.width * 0.34),
-                              backgroundColor: Colors.white,
-                              elevation: 0,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                                side: BorderSide(
+                      SizedBox(
+                        width: size.width,
+                        height: size.height * 0.1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                maximumSize: Size.fromWidth(size.width * 0.34),
+                                backgroundColor: Colors.white,
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0)),
+                                  side: BorderSide(
+                                    color: Color(0xff1E4B6C),
+                                    width: 0.9,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                // mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/icons/arrow.svg',
+                                    fit: BoxFit.cover,
+                                  ),
+                                  SizedBox(width: size.width * 0.007),
+                                  Text(
+                                    'Previous',
+                                    style: TextStyle(
+                                        color: const Color(0xff1E4B6C),
+                                        fontSize: 16 * textScaleFactor,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                maximumSize: Size.fromWidth(size.width * 0.34),
+                                backgroundColor: Colors.white,
+                                elevation: 0,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0)),
+                                  side: BorderSide(
+                                    color: Color(0xff1E4B6C),
+                                    width: 0.9,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                // mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Next',
+                                    style: TextStyle(
+                                        color: const Color(0xff1E4B6C),
+                                        fontSize: 16 * textScaleFactor,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(width: size.width * 0.007),
+                                  SvgPicture.asset(
+                                    'assets/icons/arrow_2.svg',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding:
+                        EdgeInsets.fromLTRB(0.0, size.height * 0.021, 0.0, 0.0),
+                        child: _hotTopics.isEmpty ? const CircularProgressIndicator() : Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: size.width * 0.045),
+                              child: const Text(
+                                'Top Stories',
+                                style: TextStyle(
                                   color: Color(0xff1E4B6C),
-                                  width: 0.9,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                            child: Row(
-                              // mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/icons/arrow.svg',
-                                  fit: BoxFit.cover,
-                                ),
-                                SizedBox(width: size.width * 0.007),
-                                Text(
-                                  'Previous',
-                                  style: TextStyle(
-                                      color: const Color(0xff1E4B6C),
-                                      fontSize: 16 * textScaleFactor,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                            SizedBox(
+                              height: size.height * 0.006,
                             ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              maximumSize: Size.fromWidth(size.width * 0.34),
-                              backgroundColor: Colors.white,
-                              elevation: 0,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                                side: BorderSide(
-                                  color: Color(0xff1E4B6C),
-                                  width: 0.9,
-                                ),
-                              ),
-                            ),
-                            child: Row(
-                              // mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Next',
-                                  style: TextStyle(
-                                      color: const Color(0xff1E4B6C),
-                                      fontSize: 16 * textScaleFactor,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(width: size.width * 0.007),
-                                SvgPicture.asset(
-                                  'assets/icons/arrow_2.svg',
-                                  fit: BoxFit.cover,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                            FeedListView(
+                                controller: ScrollController(initialScrollOffset: 2),
+                                height: size.height * 0.15,
+                                width: size.width,
+                                children: _hotTopics),
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding:
-                      EdgeInsets.fromLTRB(0.0, size.height * 0.021, 0.0, 0.0),
-                      child: _hotTopics.isEmpty ? const CircularProgressIndicator() : Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: size.width * 0.045),
-                            child: const Text(
-                              'Top Stories',
-                              style: TextStyle(
-                                color: Color(0xff1E4B6C),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.006,
-                          ),
-                          FeedListView(
-                              controller: ScrollController(initialScrollOffset: 2),
-                              height: size.height * 0.15,
-                              width: size.width,
-                              children: _hotTopics),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

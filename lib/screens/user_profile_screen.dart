@@ -103,7 +103,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            //todo: show a dropdown that allows user to toggle dark mode
+          },
           icon: SizedBox(
             height: avatarHeight,
             child: const Icon(

@@ -24,7 +24,8 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  if (kDebugMode) {
+  //todo: enable firebase for emulator
+  /*if (kDebugMode) {
     try {
       FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
       await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
@@ -32,7 +33,7 @@ void main() async {
       // ignore: avoid_print
       print(e);
     }
-  }
+  }*/
 
   initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
 
@@ -84,7 +85,7 @@ class MyApp extends StatelessWidget {
               );
             }
           }
-          assert(false, 'Need to implement ${settings.name}');
+          assert(false, 'Need to implement route - ${settings.name}');
           return null;
         },
       ),

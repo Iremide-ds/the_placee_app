@@ -14,6 +14,10 @@ class DBProvider with ChangeNotifier {
   final List<QueryDocumentSnapshot<Object?>> _allTopics = [];
   Map _userDetails = {};
 
+  /*Stream<QuerySnapshot<Map<String, dynamic>>> fetchPostStream() {
+    return _postStream.asBroadcastStream();
+  }*/
+
   Future<Map> getUserDetails(BuildContext context) async {
     if (_userDetails.isEmpty) await _getCurrentUserDetails(context);
     return _userDetails;
