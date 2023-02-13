@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -71,10 +72,14 @@ class _SignUpFormState extends State<SignUpForm> {
             .limit(1)
             .get()
             .then((result) async {
-              if (kDebugMode) {
-                print('logggg - ${result.docs}');
-              }
+          if (kDebugMode) {
+            print('logggg - ${result.docs}');
+          }
           await userInstance?.updatePhotoURL(result.docs.first.data()['uri']);
+        }).catchError((_, error) {
+          if (kDebugMode) {
+            print('error saving details');
+          }
         });
 
         await FirebaseFirestore.instance.collection('user_details').add({
@@ -115,6 +120,23 @@ class _SignUpFormState extends State<SignUpForm> {
       name:
           '_SignUpFormState._nextForm() /checking if inputs were retained/ emailController.text',
     );
+
+    if (_formIndex == 2 && _userInterests.length < 5) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Select at least 5 topics!'),
+        backgroundColor: Color(0xff1E4B6C),
+      ));
+      return;
+    }
+
+    if (_formIndex == 0 && _passwordController.text.length < 7) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Password must be at least 7 characters!'),
+        backgroundColor: Color(0xff1E4B6C),
+      ));
+      return;
+    }
+
     if (_formIndex < (_forms.length - 1)) {
       setState(() {
         _formIndex = _formIndex + 1;
@@ -342,8 +364,8 @@ class _SignUpFormState extends State<SignUpForm> {
             body: SizedBox(
               height: size.height,
               width: size.width,
-              child: const Center(
-                child: CircularProgressIndicator(),
+              child: Center(
+                child: const CircularProgressIndicator().animate().fadeIn(),
               ),
             ),
           )
@@ -357,10 +379,10 @@ class _SignUpFormState extends State<SignUpForm> {
               height: size.height,
               width: size.width,
               child: _forms.isEmpty
-                  ? const Center(
-                      child: CircularProgressIndicator(
+                  ? Center(
+                      child: const CircularProgressIndicator(
                         semanticsLabel: 'Loading...',
-                      ),
+                      ).animate().fadeIn(),
                     )
                   : SingleChildScrollView(
                       child: Column(

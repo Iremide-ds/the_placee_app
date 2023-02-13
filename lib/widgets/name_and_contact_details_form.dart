@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_animate/flutter_animate.dart';
+
 import '../screens/sign_in_form_screen.dart';
 
-class NameAndDetailsForm extends StatelessWidget {
+class NameAndDetailsForm extends StatefulWidget {
   final GlobalKey<FormState> nameAndContactDetailsFormKey;
   final List<Map<String, dynamic>> formEntries;
 
@@ -13,17 +15,24 @@ class NameAndDetailsForm extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<NameAndDetailsForm> createState() => _NameAndDetailsFormState();
+}
+
+class _NameAndDetailsFormState extends State<NameAndDetailsForm> {
+  bool _isobscured = true;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.05,),
       child: Form(
-          key: nameAndContactDetailsFormKey,
+          key: widget.nameAndContactDetailsFormKey,
           child: ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: formEntries.length + 1,
+            itemCount: widget.formEntries.length + 1,
             itemBuilder: (ctx, index) {
               Size size = MediaQuery.of(ctx).size;
-              return (index == formEntries.length)
+              return (index == widget.formEntries.length)
                   ? Container(
                       height: size.height * 0.022,
                       width: size.width,
@@ -61,11 +70,11 @@ class NameAndDetailsForm extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                           vertical: MediaQuery.of(ctx).size.height * 0.014),
                       child: TextFormField(
-                        controller: formEntries[index]['controller']
+                        controller: widget.formEntries[index]['controller']
                             as TextEditingController,
                         decoration: InputDecoration(
-                          labelText: formEntries[index]['hint'] as String,
-                          hintText: formEntries[index]['hint'] as String,
+                          labelText: widget.formEntries[index]['hint'] as String,
+                          hintText: widget.formEntries[index]['hint'] as String,
                           hintStyle: const TextStyle(
                             color: Color(0xffB4B4B4),
                             fontSize: 16,
@@ -81,19 +90,24 @@ class NameAndDetailsForm extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                           enabled: true,
+                          suffixIcon: (widget.formEntries[index]['hint'] == 'Password') ? IconButton(onPressed: (){
+                            setState(() {
+                              _isobscured = !_isobscured;
+                            });
+                          }, icon: Icon(_isobscured ? Icons.visibility : Icons.visibility_off),) : null,
                         ),
-                        autocorrect: (formEntries[index]['hint'] == 'Password')
+                        autocorrect: (widget.formEntries[index]['hint'] == 'Password')
                             ? false
                             : true,
-                        obscureText: (formEntries[index]['hint'] == 'Password')
-                            ? true
+                        obscureText: (widget.formEntries[index]['hint'] == 'Password')
+                            ? _isobscured
                             : false,
-                        textInputAction: formEntries[index]['actionType'],
-                        keyboardType: formEntries[index]['keyboardType'],
+                        textInputAction: widget.formEntries[index]['actionType'],
+                        keyboardType: widget.formEntries[index]['keyboardType'],
                       ),
                     );
             },
-          )),
-    );
+          ),),
+    ).animate().slideX(curve: Curves.fastOutSlowIn);
   }
 }

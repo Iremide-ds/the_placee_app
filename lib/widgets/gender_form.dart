@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_animate/flutter_animate.dart';
+
 import '../constants/my_constants.dart';
 
 class GenderForm extends StatefulWidget {
@@ -69,6 +71,6 @@ class _GenderFormState extends State<GenderForm> {
           )
         ],
       ),
-    );
+    ).animate().slideX(curve: Curves.fastOutSlowIn);
   }
 }

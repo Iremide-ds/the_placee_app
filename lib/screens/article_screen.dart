@@ -23,6 +23,7 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
+  final ScrollController _scrollController = ScrollController();
   final List<Widget> _hotTopics = [];
 
   void _buildHotTopics() {
@@ -77,7 +78,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
           IconButton(
             onPressed: () {
               widget.changeScreen(1);
-              Navigator.of(context).pop();
+              Navigator.of(context).popUntil((route) {
+                return route.settings.name == '/';
+              });
             },
             icon: const CircleAvatar(
               backgroundColor: Colors.white,
@@ -183,7 +186,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _scrollController.animateTo(_scrollController.offset - _scrollController.position.extentBefore, duration: const Duration(microseconds: 100), curve: Curves.easeIn);
+                              },
                               style: ElevatedButton.styleFrom(
                                 maximumSize: Size.fromWidth(size.width * 0.34),
                                 backgroundColor: Colors.white,
@@ -217,7 +222,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                _scrollController.animateTo(_scrollController.offset + _scrollController.position.extentAfter, duration: const Duration(microseconds: 100), curve: Curves.easeIn);
+                              },
                               style: ElevatedButton.styleFrom(
                                 maximumSize: Size.fromWidth(size.width * 0.34),
                                 backgroundColor: Colors.white,
@@ -276,7 +283,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                               height: size.height * 0.006,
                             ),
                             FeedListView(
-                                controller: ScrollController(initialScrollOffset: 2),
+                                controller: _scrollController,
                                 height: size.height * 0.15,
                                 width: size.width,
                                 children: _hotTopics),

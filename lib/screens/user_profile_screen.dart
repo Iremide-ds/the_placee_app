@@ -8,7 +8,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/my_search_bar.dart';
 import '../util/providers/auth_provider.dart';
 import '../util/providers/db_provider.dart';
 
@@ -104,7 +103,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       actions: [
         IconButton(
           onPressed: () {
-            //todo: show a dropdown that allows user to toggle dark mode
+            //todo: show something
+            showDialog(
+              context: context,
+              builder: (context) {
+                return const AlertDialog(
+                  title: Text('Settings'),
+                  content: Text('Coming soon...'),
+                );
+              },
+            );
           },
           icon: SizedBox(
             height: avatarHeight,
@@ -151,11 +159,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   CircleAvatar(
                     backgroundColor: const Color(0xffEBEBEB),
                     minRadius: size.width * 0.3,
-                    child: SvgPicture.network(
+                    child: Image.network(
                       currentUser?.photoUrl ??
                           currentUserWithEmailLogin?.photoURL as String,
-                      placeholderBuilder: (context) {
-                        return const CircularProgressIndicator();
+                      errorBuilder: (ctx, error, stacktrace) {
+                        return const Icon(Icons.person);
                       },
                     ),
                   ),

@@ -102,14 +102,14 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
             backgroundColor: const Color(0xffEBEBEB),
             child: SizedBox(
               height: avatarHeight,
-              child: SvgPicture.network(
+              child: Image.network(
                 currentUserWithEmailLogin?.photoURL ??
                     currentUser?.photoUrl as String,
-                placeholderBuilder: (ctx) {
-                  return const CircularProgressIndicator();
+                errorBuilder: (ctx, error, stacktrace) {
+                  return const Icon(Icons.person);
                 },
                 fit: BoxFit.contain,
-                semanticsLabel: 'your profile',
+                semanticLabel: 'your profile',
               ),
             ),
           ),
@@ -167,10 +167,10 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
               CircleAvatar(
                 backgroundColor: const Color(0xffEBEBEB),
                 maxRadius: MediaQuery.of(context).size.width * 0.22,
-                child: SvgPicture.network(
+                child: Image.network(
                   currentUser.photoUrl!,
-                  placeholderBuilder: (context) {
-                    return const CircularProgressIndicator();
+                  errorBuilder: (ctx, error, stacktrace) {
+                    return const Icon(Icons.person);
                   },
                 ),
               ),
@@ -236,10 +236,10 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
               CircleAvatar(
                 backgroundColor: const Color(0xffEBEBEB),
                 maxRadius: MediaQuery.of(context).size.width * 0.22,
-                child: SvgPicture.network(
+                child: Image.network(
                   currentUserWithEmailLogin.photoURL as String,
-                  placeholderBuilder: (context) {
-                    return const CircularProgressIndicator();
+                  errorBuilder: (ctx, error, stacktrace) {
+                    return const Icon(Icons.person);
                   },
                 ),
               ),

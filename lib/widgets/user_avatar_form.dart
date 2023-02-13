@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_animate/flutter_animate.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 
 // import '../constants/my_constants.dart';
@@ -98,6 +100,6 @@ class _AvatarFormState extends State<AvatarForm> {
           ),
         ),
       ],
-    );
+    ).animate().slideX(curve: Curves.fastOutSlowIn);
   }
 }
