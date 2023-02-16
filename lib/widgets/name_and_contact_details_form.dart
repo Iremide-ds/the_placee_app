@@ -19,7 +19,7 @@ class NameAndDetailsForm extends StatefulWidget {
 }
 
 class _NameAndDetailsFormState extends State<NameAndDetailsForm> {
-  bool _isobscured = true;
+  bool _isObscured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +92,15 @@ class _NameAndDetailsFormState extends State<NameAndDetailsForm> {
                           enabled: true,
                           suffixIcon: (widget.formEntries[index]['hint'] == 'Password') ? IconButton(onPressed: (){
                             setState(() {
-                              _isobscured = !_isobscured;
+                              _isObscured = !_isObscured;
                             });
-                          }, icon: Icon(_isobscured ? Icons.visibility : Icons.visibility_off),) : null,
+                          }, icon: Icon(_isObscured ? Icons.visibility : Icons.visibility_off),) : null,
                         ),
                         autocorrect: (widget.formEntries[index]['hint'] == 'Password')
                             ? false
                             : true,
                         obscureText: (widget.formEntries[index]['hint'] == 'Password')
-                            ? _isobscured
+                            ? _isObscured
                             : false,
                         textInputAction: widget.formEntries[index]['actionType'],
                         keyboardType: widget.formEntries[index]['keyboardType'],

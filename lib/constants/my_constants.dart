@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum HeroTags {profilePic, articlePic}
+
 enum Genders { Male, Female, Transgender, Binary, Human }
 
 enum Interests {

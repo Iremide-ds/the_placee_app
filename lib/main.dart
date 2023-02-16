@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';/*
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';*/
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:provider/provider.dart';
+import 'firebase_options.dart';
 
 import './themes/light_theme.dart';
 import './screens/app_home_screen.dart';
@@ -19,10 +20,12 @@ import './util/providers/db_provider.dart';
 
 PendingDynamicLinkData? initialLink;
 
+//todo: use firebase CLI to init firebase for all platforms
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   //todo: enable firebase for emulator
   /*if (kDebugMode) {

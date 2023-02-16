@@ -37,6 +37,13 @@
             {
               "client_id": "939899360394-mqsn182knj9hev5pigjn9894luq9nmk4.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "939899360394-5pvj13u90sakj2e9e0h857ea9aage3v1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.iremide.thePlacee"
+              }
             }
           ]
         }

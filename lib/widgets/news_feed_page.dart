@@ -13,6 +13,7 @@ import '../widgets/user_home_page.dart';
 import '../widgets/user_explore_page.dart';
 import '../widgets/my_search_bar.dart';
 import '../screens/user_profile_screen.dart';
+import '../constants/my_constants.dart';
 
 class NewsFeedWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -66,6 +67,8 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         Provider.of<AuthProvider>(context, listen: true)
             .getCurrentUserLoggedInWithEmail;
 
+    var photoURL = currentUserWithEmailLogin?.photoURL ?? currentUser?.photoUrl;
+
     return AppBar(
       scrolledUnderElevation: 0.8,
       elevation: 0.0,
@@ -93,23 +96,26 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         ),
       ),
       actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed(UserProfileScreen.routeName);
-          },
-          icon: CircleAvatar(
-            /*radius: avatarRadius,*/
-            backgroundColor: const Color(0xffEBEBEB),
-            child: SizedBox(
-              height: avatarHeight,
-              child: Image.network(
-                currentUserWithEmailLogin?.photoURL ??
-                    currentUser?.photoUrl as String,
-                errorBuilder: (ctx, error, stacktrace) {
-                  return const Icon(Icons.person);
-                },
-                fit: BoxFit.contain,
-                semanticLabel: 'your profile',
+        Hero(
+          tag: HeroTags.profilePic,
+          child: IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(UserProfileScreen.routeName);
+            },
+            icon: CircleAvatar(
+              /*radius: avatarRadius,*/
+              backgroundColor: const Color(0xffEBEBEB),
+              child: SizedBox(
+                height: avatarHeight,
+                child: Image.network(
+                  photoURL ??
+                      'https://firebasestorage.googleapis.com/v0/b/the-placee.appspot.com/o/avatars%2Fjpg%2Favatar_10.png?alt=media&token=3b2ac9f7-0c74-4024-9e60-5d3ccfd8832e',
+                  errorBuilder: (ctx, error, stacktrace) {
+                    return const Icon(Icons.person);
+                  },
+                  fit: BoxFit.contain,
+                  semanticLabel: 'your profile',
+                ),
               ),
             ),
           ),
@@ -150,7 +156,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         'icon': Icons.feedback_outlined,
         'onTap': () {
           //todo: create feedback route
-           }
+        }
       },
     ];
 
@@ -168,7 +174,8 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
                 backgroundColor: const Color(0xffEBEBEB),
                 maxRadius: MediaQuery.of(context).size.width * 0.22,
                 child: Image.network(
-                  currentUser.photoUrl!,
+                  currentUser.photoUrl ??
+                      'https://firebasestorage.googleapis.com/v0/b/the-placee.appspot.com/o/avatars%2Fjpg%2Favatar_10.png?alt=media&token=3b2ac9f7-0c74-4024-9e60-5d3ccfd8832e',
                   errorBuilder: (ctx, error, stacktrace) {
                     return const Icon(Icons.person);
                   },
@@ -237,7 +244,8 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
                 backgroundColor: const Color(0xffEBEBEB),
                 maxRadius: MediaQuery.of(context).size.width * 0.22,
                 child: Image.network(
-                  currentUserWithEmailLogin.photoURL as String,
+                  currentUserWithEmailLogin.photoURL ??
+                      'https://firebasestorage.googleapis.com/v0/b/the-placee.appspot.com/o/avatars%2Fjpg%2Favatar_10.png?alt=media&token=3b2ac9f7-0c74-4024-9e60-5d3ccfd8832e',
                   errorBuilder: (ctx, error, stacktrace) {
                     return const Icon(Icons.person);
                   },

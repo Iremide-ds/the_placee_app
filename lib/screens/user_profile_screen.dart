@@ -10,8 +10,8 @@ import 'package:provider/provider.dart';
 
 import '../util/providers/auth_provider.dart';
 import '../util/providers/db_provider.dart';
+import '../constants/my_constants.dart';
 
-//todo: under construction...
 class UserProfileScreen extends StatefulWidget {
   static const String routeName = '/user_profile';
 
@@ -26,12 +26,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final List<Widget> _userInterests = [];
   GoogleSignInAccount? currentUser;
   User? currentUserWithEmailLogin;
+  int _interestsCount = 0;
 
   bool _isLoading = true;
 
-  void _toggleLoading() {
+  void _toggleLoading(bool newVal) {
     setState(() {
-      _isLoading = !_isLoading;
+      _isLoading = newVal;
     });
   }
 
@@ -54,6 +55,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     Map<String, String> interests =
         await Provider.of<DBProvider>(context, listen: false)
             .getUserInterests(context);
+
+    setState(() {
+      _interestsCount = interests.length;
+    });
+
     for (MapEntry<String, String> i in interests.entries) {
       // print(i.value);
       _userInterests.add(Container(
@@ -130,7 +136,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     _fetchUser();
-    _buildUserInterests().then((_) => _toggleLoading());
+    _buildUserInterests().then((_) => _toggleLoading(false));
   }
 
   @override
@@ -156,23 +162,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircleAvatar(
-                    backgroundColor: const Color(0xffEBEBEB),
-                    minRadius: size.width * 0.3,
-                    child: Image.network(
-                      currentUser?.photoUrl ??
-                          currentUserWithEmailLogin?.photoURL as String,
-                      errorBuilder: (ctx, error, stacktrace) {
-                        return const Icon(Icons.person);
-                      },
+                  Hero(
+                    tag: HeroTags.profilePic,
+                    child: CircleAvatar(
+                      backgroundColor: const Color(0xffEBEBEB),
+                      minRadius: size.width * 0.3,
+                      child: Image.network(
+                        currentUser?.photoUrl ??
+                            currentUserWithEmailLogin?.photoURL as String,
+                        errorBuilder: (ctx, error, stacktrace) {
+                          return const Icon(Icons.person);
+                        },
+                      ),
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      CountAndLabel(count: '44', label: 'Interests'),
-                      CountAndLabel(count: '4', label: 'Saved'),
+                    children: [
+                      CountAndLabel(
+                          count: _interestsCount.toString(),
+                          label: 'Interests'),
+                      const CountAndLabel(count: '0', label: 'Saved'),
                     ],
                   ),
                   Container(

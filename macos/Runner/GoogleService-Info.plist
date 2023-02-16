@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>939899360394-5pvj13u90sakj2e9e0h857ea9aage3v1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.939899360394-5pvj13u90sakj2e9e0h857ea9aage3v1</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>939899360394-1fg3p4q09g8s26goo45irm8sm9r1auhv.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA0GOauMZlr5DuTBQ-_7-v6JAoav4yqmT4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>939899360394</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>dev.iremide.thePlacee</string>
+	<key>PROJECT_ID</key>
+	<string>the-placee</string>
+	<key>STORAGE_BUCKET</key>
+	<string>the-placee.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:939899360394:ios:b8891b252bbb73918d8973</string>
+</dict>
+</plist>

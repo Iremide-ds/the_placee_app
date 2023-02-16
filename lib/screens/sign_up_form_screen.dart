@@ -73,9 +73,9 @@ class _SignUpFormState extends State<SignUpForm> {
             .get()
             .then((result) async {
           if (kDebugMode) {
-            print('logggg - ${result.docs}');
+            print('Logggg - ${result.docs.first.data()}');
           }
-          await userInstance?.updatePhotoURL(result.docs.first.data()['uri']);
+          await userInstance?.updatePhotoURL(result.docs.first.data()['png_uri']);
         }).catchError((_, error) {
           if (kDebugMode) {
             print('error saving details');
@@ -129,12 +129,20 @@ class _SignUpFormState extends State<SignUpForm> {
       return;
     }
 
-    if (_formIndex == 0 && _passwordController.text.length < 7) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Password must be at least 7 characters!'),
-        backgroundColor: Color(0xff1E4B6C),
-      ));
-      return;
+    if (_formIndex == 0) {
+      if (_passwordController.text.length < 7) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Password must be at least 7 characters!'),
+          backgroundColor: Color(0xff1E4B6C),
+        ));
+        return;
+      } else if (!_emailController.text.contains('@')) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Enter a valid email address!'),
+          backgroundColor: Color(0xff1E4B6C),
+        ));
+        return;
+      }
     }
 
     if (_formIndex < (_forms.length - 1)) {

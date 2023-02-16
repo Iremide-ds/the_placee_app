@@ -6,7 +6,6 @@ import '../screens/article_screen.dart';
 
 class PostCard extends StatelessWidget {
   final double width /*, height*/;
-
   final String title;
   final BorderRadius borderRadius;
   final String imageUrl;
