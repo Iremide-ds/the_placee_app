@@ -10,7 +10,8 @@ class UserExplorePage extends StatefulWidget {
   final List<Widget> searchResults;
   final Function changeScreen;
 
-  const UserExplorePage({Key? key, required this.searchResults, required this.changeScreen})
+  const UserExplorePage(
+      {Key? key, required this.searchResults, required this.changeScreen})
       : super(key: key);
 
   @override
@@ -44,17 +45,18 @@ class _UserExplorePageState extends State<UserExplorePage> {
     _topicsFeed.addAll(totalPosts.map((doc) {
       count += 1;
       return StaggeredGridTile.count(
-          crossAxisCellCount: 1,
-          mainAxisCellCount: (count % 2 == 0) ? 1.7 : 2,
-          child: PostCard(
-            width: MediaQuery.of(context).size.width * 0.4,
-            // height: MediaQuery.of(context).size.height * 0.2,
-            title: doc['title'],
-            borderRadius: MyBorderRadius.borderRadius2,
-            imageUrl: doc['image_url'],
-            post: doc,
-            changeScreen: widget.changeScreen,
-          ),);
+        crossAxisCellCount: 1,
+        mainAxisCellCount: (count % 2 == 0) ? 1.7 : 2,
+        child: PostCard(
+          width: MediaQuery.of(context).size.width * 0.4,
+          // height: MediaQuery.of(context).size.height * 0.2,
+          title: doc['title'],
+          borderRadius: MyBorderRadius.borderRadius2,
+          imageUrl: doc['image_url'],
+          post: doc,
+          changeScreen: widget.changeScreen,
+        ),
+      );
     }).toList());
   }
 

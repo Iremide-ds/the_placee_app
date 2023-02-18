@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../util/providers/auth_provider.dart';
 import '../util/providers/db_provider.dart';
@@ -13,7 +14,10 @@ import '../widgets/user_home_page.dart';
 import '../widgets/user_explore_page.dart';
 import '../widgets/my_search_bar.dart';
 import '../screens/user_profile_screen.dart';
+import '../screens/article_screen.dart';
+import '../screens/feedback_and_help_screen.dart';
 import '../constants/my_constants.dart';
+import '../util/dynamic_links.dart';
 
 class NewsFeedWidget extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -25,7 +29,7 @@ class NewsFeedWidget extends StatefulWidget {
 }
 
 class _NewsFeedWidgetState extends State<NewsFeedWidget> {
-  final TextEditingController searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   final List<Widget> _searchResult = [];
   PageController? _controller;
   int _index = 0;
@@ -45,7 +49,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
 
     for (var post in allPosts) {
       if (post.get('title').contains(text)) {
-        _searchResult.add(Text(post['title']));
+        _searchResult.add(SearchResultWidget(post: post, changeScreen: _changeScreen,));
       }
     }
     setState(() {});
@@ -57,6 +61,14 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
           duration: const Duration(milliseconds: 290),
           curve: Curves.fastOutSlowIn);
     }
+  }
+
+  void _exploreLatestStory(String title) {
+    _searchController.text = title;
+    _controller?.animateToPage(1,
+        duration: const Duration(milliseconds: 290),
+        curve: Curves.fastOutSlowIn);
+    _searchArticles(title);
   }
 
   PreferredSizeWidget _buildAppBar(
@@ -78,7 +90,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         child: Center(
           child: RepaintBoundary(
             child: MySearchBar(
-              searchController: searchController,
+              searchController: _searchController,
               height: searchBarHeight,
               width: searchBarWidth,
               searchFunction: _searchArticles,
@@ -155,7 +167,7 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         'title': 'Feedback & Help',
         'icon': Icons.feedback_outlined,
         'onTap': () {
-          //todo: create feedback route
+          Navigator.of(context).pushNamed(FeedBackScreen.routeName);
         }
       },
     ];
@@ -208,8 +220,9 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  //todo: generate and share dynamic link
+                onPressed: () async {
+                  Uri dynamicLink = await DynamicLinksProvider().createLink();
+                  Share.share(dynamicLink.toString(), subject: 'Check out the placee!');
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -281,7 +294,10 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    Uri dynamicLink = await DynamicLinksProvider().createLink();
+                    Share.share(dynamicLink.toString(), subject: 'Check out the placee!');
+                  },
                   child: Row(
                     children: [
                       const Icon(Icons.share),
@@ -336,7 +352,9 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
             });
           },
           children: [
-            UserHomePage(changeScreen: _changeScreen),
+            UserHomePage(
+                changeScreen: _changeScreen,
+                exploreArticle: _exploreLatestStory),
             UserExplorePage(
                 searchResults: _searchResult, changeScreen: _changeScreen)
           ]),
@@ -384,5 +402,27 @@ class _NewsFeedWidgetState extends State<NewsFeedWidget> {
         ),
       ),
     );
+  }
+}
+
+class SearchResultWidget extends StatelessWidget {
+  final QueryDocumentSnapshot<Object?> post;
+  final Function changeScreen;
+
+  const SearchResultWidget({Key? key, required this.post, required this.changeScreen}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      // leading: Text(post['date'].toDate().toString()),
+      title: Text(post['title']),
+      subtitle: Text(post['author'].toString()),
+      onTap: () {
+        Navigator.of(context).pushNamed(ArticleScreen.routeName,
+            arguments: {'post': post, 'function': changeScreen});
+      },
+    ); /*SizedBox(
+      child: Text(post['title']),
+    );*/
   }
 }

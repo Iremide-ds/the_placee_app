@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:the_placee/util/providers/db_provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
+import '../util/providers/db_provider.dart';
 import '../widgets/post_card_widget.dart';
 import '../constants/my_constants.dart';
 
@@ -26,10 +27,30 @@ class _ArticleScreenState extends State<ArticleScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<Widget> _hotTopics = [];
 
+  bool _liked = false;
+  bool _unliked = false;
+
+  void _toggleLike() {
+    setState(() {
+      _liked = !_liked;
+      _unliked = false;
+    });
+  }
+
+  void _toggleUnlike() {
+    setState(() {
+      _unliked = !_unliked;
+      _liked = false;
+    });
+  }
+
   void _buildHotTopics() {
-    Provider.of<DBProvider>(context, listen: false).getAllPosts(true).then((totalPosts) {
+    Provider.of<DBProvider>(context, listen: false)
+        .getAllPosts(true)
+        .then((totalPosts) {
       _hotTopics.clear();
-      _hotTopics.add(SizedBox(width: MediaQuery.of(context).size.width * 0.045));
+      _hotTopics
+          .add(SizedBox(width: MediaQuery.of(context).size.width * 0.045));
       _hotTopics.addAll(totalPosts.map((doc) {
         return PostCard(
           width: MediaQuery.of(context).size.width * 0.4,
@@ -45,7 +66,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
       setState(() {});
     });
   }
-
 
   @override
   void initState() {
@@ -92,210 +112,237 @@ class _ArticleScreenState extends State<ArticleScreen> {
       body: SizedBox(
         height: size.height,
         width: size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: size.height * 0.56,
-              width: size.width,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    widget.post['image_url'],
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: size.width * 0.04, bottom: size.height * 0.01),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.thumb_up_alt_rounded,
-                                color: Colors.white),
-                            SizedBox(width: size.width * 0.007),
-                            Text(
-                              'Helpful',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16 * textScaleFactor),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: size.width * 0.04, bottom: size.height * 0.01),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.thumb_down_alt_rounded,
-                                color: Colors.white),
-                            SizedBox(width: size.width * 0.007),
-                            Text(
-                              'Not Helpful',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16 * textScaleFactor),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
+        child: RepaintBoundary(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: size.height * 0.56,
                 width: size.width,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.post.get('title'),
-                        style: TextStyle(
-                          color: const Color(0xff1E4B6C),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24 * textScaleFactor,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      widget.post['image_url'],
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: size.width * 0.04,
+                              bottom: size.height * 0.01),
+                          child: IconButton(
+                            onPressed: () {
+                              _toggleLike();
+                            },
+                            icon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.thumb_up_alt_rounded,
+                                    color: _liked ? const Color(0xff1E4B6C) : Colors.white),
+                                SizedBox(width: size.width * 0.007),
+                                Text(
+                                  'Helpful',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16 * textScaleFactor),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: size.height * 0.009),
-                      Text(
-                        widget.post.get('content'),
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16 * textScaleFactor,
+                        Padding(
+                          padding: EdgeInsets.only(
+                              right: size.width * 0.04,
+                              bottom: size.height * 0.01),
+                          child: IconButton(
+                            onPressed: () {
+                              _toggleUnlike();
+                            },
+                            icon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.thumb_down_alt_rounded,
+                                    color: _unliked ? const Color(0xff1E4B6C) : Colors.white),
+                                SizedBox(width: size.width * 0.007),
+                                Text(
+                                  'Not Helpful',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16 * textScaleFactor),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: size.width,
-                        height: size.height * 0.1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                _scrollController.animateTo(_scrollController.offset - _scrollController.position.extentBefore, duration: const Duration(microseconds: 100), curve: Curves.easeIn);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                maximumSize: Size.fromWidth(size.width * 0.34),
-                                backgroundColor: Colors.white,
-                                elevation: 0,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0)),
-                                  side: BorderSide(
-                                    color: Color(0xff1E4B6C),
-                                    width: 0.9,
+                      ],
+                    )),
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
+                  width: size.width,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.post.get('title'),
+                          style: TextStyle(
+                            color: const Color(0xff1E4B6C),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 24 * textScaleFactor,
+                          ),
+                        ),
+                        SizedBox(height: size.height * 0.009),
+                        Text(
+                          widget.post.get('content'),
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16 * textScaleFactor,
+                          ),
+                        ),
+                        SizedBox(
+                          width: size.width,
+                          height: size.height * 0.1,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  _scrollController.animateTo(
+                                      _scrollController.offset -
+                                          _scrollController.position.extentBefore,
+                                      duration: const Duration(microseconds: 100),
+                                      curve: Curves.easeIn);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  maximumSize: Size.fromWidth(size.width * 0.34),
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10.0)),
+                                    side: BorderSide(
+                                      color: Color(0xff1E4B6C),
+                                      width: 0.9,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Row(
-                                // mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/arrow.svg',
-                                    fit: BoxFit.cover,
-                                  ),
-                                  SizedBox(width: size.width * 0.007),
-                                  Text(
-                                    'Previous',
-                                    style: TextStyle(
-                                        color: const Color(0xff1E4B6C),
-                                        fontSize: 16 * textScaleFactor,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                _scrollController.animateTo(_scrollController.offset + _scrollController.position.extentAfter, duration: const Duration(microseconds: 100), curve: Curves.easeIn);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                maximumSize: Size.fromWidth(size.width * 0.34),
-                                backgroundColor: Colors.white,
-                                elevation: 0,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0)),
-                                  side: BorderSide(
-                                    color: Color(0xff1E4B6C),
-                                    width: 0.9,
-                                  ),
+                                child: Row(
+                                  // mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/icons/arrow.svg',
+                                      fit: BoxFit.cover,
+                                    ),
+                                    SizedBox(width: size.width * 0.007),
+                                    Text(
+                                      'Previous',
+                                      style: TextStyle(
+                                          color: const Color(0xff1E4B6C),
+                                          fontSize: 16 * textScaleFactor,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              child: Row(
-                                // mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Next',
-                                    style: TextStyle(
-                                        color: const Color(0xff1E4B6C),
-                                        fontSize: 16 * textScaleFactor,
-                                        fontWeight: FontWeight.w600),
+                              ElevatedButton(
+                                onPressed: () {
+                                  _scrollController.animateTo(
+                                      _scrollController.offset +
+                                          _scrollController.position.extentAfter,
+                                      duration: const Duration(microseconds: 100),
+                                      curve: Curves.easeIn);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  maximumSize: Size.fromWidth(size.width * 0.34),
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10.0)),
+                                    side: BorderSide(
+                                      color: Color(0xff1E4B6C),
+                                      width: 0.9,
+                                    ),
                                   ),
-                                  SizedBox(width: size.width * 0.007),
-                                  SvgPicture.asset(
-                                    'assets/icons/arrow_2.svg',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding:
-                        EdgeInsets.fromLTRB(0.0, size.height * 0.021, 0.0, 0.0),
-                        child: _hotTopics.isEmpty ? const CircularProgressIndicator() : Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: size.width * 0.045),
-                              child: const Text(
-                                'Top Stories',
-                                style: TextStyle(
-                                  color: Color(0xff1E4B6C),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                                ),
+                                child: Row(
+                                  // mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Next',
+                                      style: TextStyle(
+                                          color: const Color(0xff1E4B6C),
+                                          fontSize: 16 * textScaleFactor,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(width: size.width * 0.007),
+                                    SvgPicture.asset(
+                                      'assets/icons/arrow_2.svg',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: size.height * 0.006,
-                            ),
-                            FeedListView(
-                                controller: _scrollController,
-                                height: size.height * 0.15,
-                                width: size.width,
-                                children: _hotTopics),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Container(
+                          padding: EdgeInsets.fromLTRB(
+                              0.0, size.height * 0.021, 0.0, 0.0),
+                          child: _hotTopics.isEmpty
+                              ? const CircularProgressIndicator()
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          left: size.width * 0.045),
+                                      child: const Text(
+                                        'Top Stories',
+                                        style: TextStyle(
+                                          color: Color(0xff1E4B6C),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: size.height * 0.006,
+                                    ),
+                                    FeedListView(
+                                        controller: _scrollController,
+                                        height: size.height * 0.15,
+                                        width: size.width,
+                                        children: _hotTopics),
+                                  ],
+                                ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ).animate().slideY(curve: Curves.easeInOut),
         ),
       ),
     );
@@ -309,10 +356,10 @@ class FeedListView extends StatelessWidget {
 
   const FeedListView(
       {Key? key,
-        required this.height,
-        required this.width,
-        required this.children,
-        required this.controller})
+      required this.height,
+      required this.width,
+      required this.children,
+      required this.controller})
       : super(key: key);
 
   @override

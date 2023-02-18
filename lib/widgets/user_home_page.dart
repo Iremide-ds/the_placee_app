@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../screens/article_screen.dart';
 import './post_card_widget.dart';
+
 // import '../util/providers/auth_provider.dart';
 import '../util/providers/db_provider.dart';
 import '../constants/my_constants.dart';
@@ -14,8 +15,11 @@ import '../constants/my_constants.dart';
 //news feed
 class UserHomePage extends StatefulWidget {
   final Function changeScreen;
+  final Function exploreArticle;
 
-  const UserHomePage({Key? key, required this.changeScreen}) : super(key: key);
+  const UserHomePage(
+      {Key? key, required this.changeScreen, required this.exploreArticle})
+      : super(key: key);
 
   @override
   State<UserHomePage> createState() => _UserHomePageState();
@@ -31,7 +35,8 @@ class _UserHomePageState extends State<UserHomePage> {
   bool _isLoading = true;
 
   Future<void> _getCurrentUserDetails() async {
-    await Provider.of<DBProvider>(context, listen: false).getUserDetails(context)
+    await Provider.of<DBProvider>(context, listen: false)
+        .getUserDetails(context)
         .then((result) {
       setState(() {
         _userDetails = result;
@@ -96,8 +101,9 @@ class _UserHomePageState extends State<UserHomePage> {
             vertical: MediaQuery.of(context).size.height * 0.03,
           ),
           child: GestureDetector(
-            onTap: () => Navigator.of(context)
-                .pushNamed(ArticleScreen.routeName, arguments: {'post': doc, 'function': widget.changeScreen}),
+            onTap: () => Navigator.of(context).pushNamed(
+                ArticleScreen.routeName,
+                arguments: {'post': doc, 'function': widget.changeScreen}),
             child: Card(
               elevation: 1.0,
               shape: const RoundedRectangleBorder(
@@ -150,10 +156,17 @@ class _UserHomePageState extends State<UserHomePage> {
                       child: Padding(
                         padding: EdgeInsets.only(
                             top: MediaQuery.of(context).size.height * 0.016,
-                            right: MediaQuery.of(context).size.width * 0.08),
-                        child: const CircleAvatar(
+                            right: MediaQuery.of(context).size.width * 0.06),
+                        child: CircleAvatar(
                           backgroundColor: Colors.white,
-                          child: Icon(Icons.explore, color: Color(0xff1E4B6C)),
+                          child: IconButton(
+                            onPressed: () =>
+                                widget.exploreArticle(doc['title']),
+                            icon: const Icon(
+                              Icons.explore,
+                              color: Color(0xff1E4B6C),
+                            ),
+                          ),
                         ),
                       ),
                     ),

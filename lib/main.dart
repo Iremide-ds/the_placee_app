@@ -15,6 +15,7 @@ import './screens/sign_in_form_screen.dart';
 import './screens/spalsh_screen.dart';
 import './screens/user_profile_screen.dart';
 import './screens/article_screen.dart';
+import './screens/feedback_and_help_screen.dart';
 import './util/providers/auth_provider.dart';
 import './util/providers/db_provider.dart';
 
@@ -71,6 +72,7 @@ class MyApp extends StatelessWidget {
           SignInForm.routeName: (_) => const SignInForm(),
           MySplashScreen.routeName: (_) => const MySplashScreen(),
           UserProfileScreen.routeName: (_) => const UserProfileScreen(),
+          FeedBackScreen.routeName: (_) => const FeedBackScreen(),
           // ArticleScreen.routeName: (_) => const ArticleScreen(),
         },
         onGenerateRoute: (settings) {
