@@ -1,6 +1,9 @@
 # the_placee
 
-A new Flutter project for the placee design by Ayewa David.
+A new Flutter project for the placee design by David Eronmosele.
+LinkedIn - https://www.linkedin.com/in/david-eronmosele-78a59a19a
+
+This is a simple news mobile app.
 
 ## Getting Started
 
