@@ -95,7 +95,7 @@ class AuthProvider with ChangeNotifier {
       name: 'AuthProvider()._continueWithEmail()',
       time: DateTime.now(),
     );
-    Navigator.of(context).pushReplacementNamed(route);
+    Navigator.of(context).pushNamed(route);
   }
 
   void signOut() async {
