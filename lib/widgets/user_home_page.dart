@@ -51,6 +51,28 @@ class _UserHomePageState extends State<UserHomePage> {
       }
       return;
     }
+    if (_userDetails != null && _userDetails!.isEmpty) {
+      if (kDebugMode) {
+        print('no user details!!!');
+      }
+      await FirebaseFirestore.instance
+          .collection('topics')
+          .limit(5)
+          .get()
+          .then((result) {
+        for (int i = 0; i < result.docs.length; i++) {
+          if (kDebugMode) {
+            print('interest - ${result.docs[i].data()['name']}');
+          }
+          setState(() {
+            _userInterests[result.docs[i].data()['id']] =
+                result.docs[i].data()['name'];
+          });
+        }
+      });
+      return;
+    }
+
     _userInterests.clear();
     for (String id in _userDetails!['interests']) {
       await FirebaseFirestore.instance
@@ -182,16 +204,35 @@ class _UserHomePageState extends State<UserHomePage> {
     interestFeed.clear();
     final Size size = MediaQuery.of(context).size;
 
-    for (var i in _userDetails!['interests']) {
-      List tempCon = totalPosts.where((element) {
-        Map? temp = element.data() as Map?;
-        return temp?['topic'].toString() == i.toString();
-      }).toList();
-      if (tempCon.isNotEmpty) {
-        interestAndPosts[_userInterests[i.toString()]] = tempCon;
+    if (_userDetails != null &&
+        _userDetails!.isNotEmpty &&
+        _userDetails!.containsKey('interests')) {
+      for (var i in _userDetails!['interests']) {
+        List tempCon = totalPosts.where((element) {
+          Map? temp = element.data() as Map?;
+          return temp?['topic'].toString() == i.toString();
+        }).toList();
+        if (tempCon.isNotEmpty) {
+          interestAndPosts[_userInterests[i.toString()]] = tempCon;
+        }
+        if (interestAndPosts.length == 5) {
+          break;
+        }
       }
-      if (interestAndPosts.length == 5) {
-        break;
+    } else {
+      print(_userInterests.values);
+      for (MapEntry i in _userInterests.entries) {
+        List tempCon = totalPosts.where((element) {
+          Map? temp = element.data() as Map?;
+          return temp?['topic'].toString() == i.key.toString();
+        }).toList();
+        print('${i.value.toString()} -- ${tempCon.length}');
+        if (tempCon.isNotEmpty) {
+          interestAndPosts[i.value.toString()] = tempCon;
+        }
+        if (interestAndPosts.length == 5) {
+          break;
+        }
       }
     }
 
@@ -280,12 +321,15 @@ class _UserHomePageState extends State<UserHomePage> {
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
+                print('check 1');
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.data == null) {
+                print('check 2');
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.data?.docs == null) {
+                print('check 3');
                 return const Center(child: CircularProgressIndicator());
               }
 

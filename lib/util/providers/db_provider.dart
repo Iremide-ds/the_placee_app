@@ -55,6 +55,7 @@ class DBProvider with ChangeNotifier {
         .get()
         .then((result) {
       result = result as QuerySnapshot<Map<String, dynamic>>;
+      if (result.docs.isEmpty) return;
       _userDetails = result.docs.first.data();
     });
   }

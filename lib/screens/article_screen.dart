@@ -31,6 +31,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
   bool _unliked = false;
 
   void _toggleLike() {
+    //todo: add topic to user interests
     setState(() {
       _liked = !_liked;
       _unliked = false;
