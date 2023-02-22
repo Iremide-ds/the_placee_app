@@ -47,7 +47,7 @@ class FeedBackScreen extends StatelessWidget {
                       ),
                       SizedBox(height: size.height * 0.01),
                       Text(
-                        'David Ayewa',
+                        'David Eronmosele',
                         style: TextStyle(fontSize: 16 * textScaleFactor),
                       ),
                       Text(
