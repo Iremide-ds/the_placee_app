@@ -39,6 +39,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
   int _formIndex = 0;
   bool _isLoading = true;
+  bool _noData = false;
   String _chosenAvatarId = '0';
   bool _registering = false;
   bool _registered = false;
@@ -75,7 +76,8 @@ class _SignUpFormState extends State<SignUpForm> {
           if (kDebugMode) {
             print('Logggg - ${result.docs.first.data()}');
           }
-          await userInstance?.updatePhotoURL(result.docs.first.data()['png_uri']);
+          await userInstance
+              ?.updatePhotoURL(result.docs.first.data()['png_uri']);
         }).catchError((_, error) {
           if (kDebugMode) {
             print('error saving details');
@@ -360,6 +362,11 @@ class _SignUpFormState extends State<SignUpForm> {
       setState(() {
         _isLoading = false;
       });
+    }).catchError((_, err) {
+      setState(() {
+        _isLoading = false;
+        _noData = true;
+      });
     });
   }
 
@@ -394,58 +401,67 @@ class _SignUpFormState extends State<SignUpForm> {
                     )
                   : SingleChildScrollView(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: size.width * 0.05,
-                            ),
-                            child: _buildFormHeader(
-                              _forms[_formIndex]['header'],
-                              _forms[_formIndex]['description'],
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.631,
-                            width: size.width,
-                            child: _forms[_formIndex]['form'],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: size.width * 0.05,
-                            ),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                fixedSize:
-                                    Size(size.width, size.height * 0.067),
-                                backgroundColor: const Color(0xff1E4B6C),
-                                side: BorderSide.none,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
+                        mainAxisAlignment: _noData
+                            ? MainAxisAlignment.center
+                            : MainAxisAlignment.start,
+                        crossAxisAlignment: _noData
+                            ? CrossAxisAlignment.center
+                            : CrossAxisAlignment.start,
+                        mainAxisSize:
+                            _noData ? MainAxisSize.max : MainAxisSize.min,
+                        children: _noData
+                            ? [Text('An error occurred!')]
+                            : [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: size.width * 0.05,
+                                  ),
+                                  child: _buildFormHeader(
+                                    _forms[_formIndex]['header'],
+                                    _forms[_formIndex]['description'],
+                                  ),
                                 ),
-                              ),
-                              onPressed: () {
-                                if (!_registering) {
-                                  // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please wait...'),));
-                                  _nextForm();
-                                }
-                              },
-                              child: _registering
-                                  ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
-                                  : Text(
-                                      (_formIndex == (_forms.length - 1))
-                                          ? 'Sign up'
-                                          : 'Continue',
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 16),
+                                SizedBox(
+                                  height: size.height * 0.631,
+                                  width: size.width,
+                                  child: _forms[_formIndex]['form'],
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: size.width * 0.05,
+                                  ),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      fixedSize:
+                                          Size(size.width, size.height * 0.067),
+                                      backgroundColor: const Color(0xff1E4B6C),
+                                      side: BorderSide.none,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
                                     ),
-                            ),
-                          ),
-                        ],
+                                    onPressed: () {
+                                      if (!_registering) {
+                                        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please wait...'),));
+                                        _nextForm();
+                                      }
+                                    },
+                                    child: _registering
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : Text(
+                                            (_formIndex == (_forms.length - 1))
+                                                ? 'Sign up'
+                                                : 'Continue',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16),
+                                          ),
+                                  ),
+                                ),
+                              ],
                       ),
                     ),
             ),
