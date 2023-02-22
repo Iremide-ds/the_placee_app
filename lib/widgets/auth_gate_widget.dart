@@ -118,7 +118,7 @@ class AuthGate extends StatelessWidget {
                       // width: size.width * 0.2,
                       child: TextButton(
                         onPressed: () =>
-                            Navigator.of(context).pushNamed(SignInForm.routeName),
+                            Navigator.of(context).pushReplacementNamed(SignInForm.routeName),
                         style: TextButton.styleFrom(padding: EdgeInsets.zero),
                         child: Text(
                           'Login',
